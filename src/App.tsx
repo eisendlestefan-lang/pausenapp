@@ -27,6 +27,12 @@ const ORDER_DEADLINE_HOUR = 18;
 const ORDER_DEADLINE_MINUTE = 0;
 
 const demoUser = { id: "admin-001", name: ADMIN_NAME, email: ADMIN_EMAIL, role: "admin" };
+const demoGuestUser = {
+  id: "guest-demo",
+  name: "Demo Gast",
+  email: "demo@pausenapp.local",
+  role: "parent",
+};
 
 const fallbackProducts = [
   { id: "laugen-schinken-kaese", name: "Laugenbrot mit Schinken & Käse", price: 3.2, tags: ["klassisch"], desc: "Beliebtes Pausenbrot mit Schinken und Käse." },
@@ -439,6 +445,7 @@ function ParentHome({ children, orders, completedOrders, onNavigate, onSelectChi
 
 export default function PausenappMvpPrototype() {
   const [user, setUser] = useState(null);
+  const [isGuestMode, setIsGuestMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState(ADMIN_EMAIL);
   const [loginPassword, setLoginPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
@@ -531,6 +538,31 @@ export default function PausenappMvpPrototype() {
       setAuthLoading(false);
     }
   }
+  function startGuestMode() {
+  setIsGuestMode(true);
+  setUser(null);
+
+  setChildren(initialChildren);
+  setOrders(initialOrders);
+  setCompletedOrders([]);
+
+  setBackendNotice(
+    "Demo-Gastmodus aktiv – Änderungen werden nur lokal gespeichert."
+  );
+
+  setActiveTab("start");
+}
+
+function exitGuestMode() {
+  setIsGuestMode(false);
+  setUser(null);
+
+  setChildren(initialChildren);
+  setOrders(initialOrders);
+  setCompletedOrders(initialCompletedOrders);
+
+  setBackendNotice("Gastmodus beendet.");
+}
 
   async function logout() {
     try {
@@ -543,7 +575,11 @@ export default function PausenappMvpPrototype() {
   }
 
   const hasRealSupabaseUser = functionNeedsRealUser(user);
-  const currentUser = hasRealSupabaseUser ? user : demoUser;
+  const currentUser = isGuestMode
+  ? demoGuestUser
+  : hasRealSupabaseUser
+    ? user
+    : demoUser;
   const navigationItems = getNavigationItems(currentUser);
   const activeChild = children.find((child) => child.id === activeChildId) || children[0];
   const weeklyTotal = useMemo(() => calculateWeeklyTotal(orders, menuProducts), [orders, menuProducts]);
@@ -744,6 +780,29 @@ export default function PausenappMvpPrototype() {
       setLastOrder(null);
       return;
     }
+    if (isGuestMode) {
+  const demoOrder = createLocalOrderRecord({
+    completedOrders,
+    user: demoGuestUser,
+    child: activeChild,
+    day: activeDay,
+    total: activeDayTotal,
+    paymentMethod: selectedPayment,
+  });
+
+  setCompletedOrders((prev) => [demoOrder, ...prev]);
+  setLastOrder(demoOrder);
+
+  setLastConfirmation(
+    "Demo-Bestellung erfolgreich. Es wurden keine Daten gespeichert und keine E-Mails versendet."
+  );
+
+  setBackendNotice(
+    "Demo-Modus: Bestellung wurde nur lokal simuliert."
+  );
+
+  return;
+}
     if (!dayItems.length) {
       setLastConfirmation("Bitte wähle zuerst mindestens ein Produkt aus.");
       setLastOrder(null);
@@ -915,7 +974,36 @@ export default function PausenappMvpPrototype() {
               {!hasRealSupabaseUser && <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">Speichern nur lokal</span>}
             </div>
 
-        {!hasRealSupabaseUser && <Card className="mb-6 rounded-2xl border-2 border-amber-300 bg-amber-50 shadow-sm"><CardContent className="grid gap-3 p-5 md:grid-cols-[1fr_1fr_auto] md:items-end"><div className="md:col-span-3"><h2 className="text-xl font-bold text-amber-950">Supabase Login erforderlich</h2><p className="mt-1 text-sm text-amber-800">Bitte hier mit deinem Supabase-Admin-User einloggen. Falls die Vorschau Supabase blockiert, läuft die App lokal weiter.</p></div><div><label className="text-sm font-semibold text-slate-600">Admin E-Mail</label><Input value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} className="mt-2 rounded-xl" /></div><div><label className="text-sm font-semibold text-slate-600">Passwort</label><Input type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} className="mt-2 rounded-xl" /></div><Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="rounded-xl">{authLoading ? "Login..." : "Einloggen"}</Button></CardContent></Card>}
+            {isGuestMode && (
+  <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-violet-200 bg-violet-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p className="font-bold text-violet-900">
+        👤 Demo-Gastmodus
+      </p>
+      <p className="text-sm text-violet-700">
+        Du kannst die Pausenapp ausprobieren. Es werden keine echten
+        Bestellungen gespeichert und keine E-Mails versendet.
+      </p>
+    </div>
+
+    <Button
+      variant="outline"
+      onClick={exitGuestMode}
+      className="rounded-xl bg-white"
+    >
+      Demo beenden
+    </Button>
+  </div>
+)}
+
+        {!hasRealSupabaseUser && !isGuestMode && <Card className="mb-6 rounded-2xl border-2 border-amber-300 bg-amber-50 shadow-sm"><CardContent className="grid gap-3 p-5 md:grid-cols-[1fr_1fr_auto] md:items-end"><div className="md:col-span-3"><h2 className="text-xl font-bold text-amber-950">Supabase Login erforderlich</h2><p className="mt-1 text-sm text-amber-800">Bitte hier mit deinem Supabase-Admin-User einloggen. Falls die Vorschau Supabase blockiert, läuft die App lokal weiter.</p></div><div><label className="text-sm font-semibold text-slate-600">Admin E-Mail</label><Input value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} className="mt-2 rounded-xl" /></div><div><label className="text-sm font-semibold text-slate-600">Passwort</label><Input type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} className="mt-2 rounded-xl" /></div><Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="rounded-xl">{authLoading ? "Login..." : "Einloggen"}</Button><Button
+  type="button"
+  variant="outline"
+  onClick={startGuestMode}
+  className="rounded-xl"
+>
+  👤 Als Gast testen
+</Button></CardContent></Card>}
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
           {activeTab === "start" && <ParentHome children={children} orders={orders} completedOrders={completedOrders} onNavigate={setActiveTab} onSelectChild={setActiveChildId} onSelectDay={setActiveDay} />}
