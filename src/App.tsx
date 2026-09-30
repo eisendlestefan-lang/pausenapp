@@ -724,29 +724,39 @@ export default function PausenappMvpPrototype() {
   return <div className="min-h-screen bg-[#f7f9fc] text-slate-950"><style>{`
 @media screen { .print-only { display: none !important; } }
 @media print {
-  @page { size: A4 portrait; margin: 12mm; }
+  @page { size: A4 portrait; margin: 8mm; }
   html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { margin: 0 !important; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
   .bakery-print-root { display: block !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: 0 !important; background: #fff !important; }
-  .bakery-print-header { margin: 0 0 5mm !important; padding: 5mm !important; border-radius: 4mm !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
+  .bakery-print-header { margin: 0 0 3mm !important; padding: 3.5mm !important; border-radius: 4mm !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
   .bakery-print-header button { display: none !important; }
-  .bakery-stats { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 3mm !important; margin-bottom: 4mm !important; }
+  .bakery-stats { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 2mm !important; margin-bottom: 2.5mm !important; }
   .bakery-stats > :nth-child(4), .bakery-stats > :nth-child(5) { display: none !important; }
   .bakery-stats > * { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
-  .bakery-allergy-card { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 4mm !important; }
+  .bakery-allergy-card { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 2.5mm !important; }
   .bakery-main-grid { display: block !important; }
   .bakery-production-card { box-shadow: none !important; break-inside: auto !important; page-break-inside: auto !important; margin-bottom: 0 !important; }
-  .bakery-production-card > div { padding: 4mm !important; }
-  .bakery-production-card > div > div.space-y-3 { gap: 2mm !important; }
-  .bakery-production-card > div > div.space-y-3 > div { padding: 3mm !important; }
-  .bakery-allergy-card > div { padding: 4mm !important; }
-  .bakery-stats > * > div { padding: 4mm !important; }
+  .bakery-production-card > div { padding: 3mm !important; }
+  .bakery-production-card > div > div.space-y-3 { gap: 1mm !important; }
+  .bakery-production-card > div > div.space-y-3 > div { padding: 2mm 3mm !important; }
+  .bakery-allergy-card > div { padding: 3mm !important; }
+  .bakery-stats > * > div { padding: 3mm !important; }
   .bakery-commission-card { box-shadow: none !important; break-before: page; page-break-before: always; margin-top: 0 !important; }
   .bakery-commission-card button { display: none !important; }
   .bakery-commission-card > div > div.space-y-3 > div { break-inside: avoid; page-break-inside: avoid; }
   .bakery-production-card > div > div.space-y-3 > div { break-inside: avoid; page-break-inside: avoid; }
+  .bakery-print-header h2 { margin-top: 2mm !important; font-size: 22pt !important; line-height: 1.05 !important; }
+  .bakery-print-header p { margin-top: 1mm !important; font-size: 9.5pt !important; line-height: 1.25 !important; }
+  .bakery-stats p.text-4xl { font-size: 24pt !important; line-height: 1 !important; }
+  .bakery-stats .mb-5 { margin-bottom: 2mm !important; }
+  .bakery-stats p.mt-3 { margin-top: 1mm !important; }
+  .bakery-allergy-card .mt-4 { margin-top: 2mm !important; }
+  .bakery-production-card .mb-5 { margin-bottom: 2mm !important; }
+  .bakery-production-card h3 { font-size: 18pt !important; line-height: 1.05 !important; }
+  .bakery-production-card .h-10 { height: 7mm !important; width: 7mm !important; }
+  .bakery-production-card .text-lg { font-size: 11pt !important; }
   .bakery-print-root h2, .bakery-print-root h3, .bakery-print-root p { orphans: 3; widows: 3; }
   .bakery-print-root main { padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: 0 !important; }
 }
