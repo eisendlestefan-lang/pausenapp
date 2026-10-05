@@ -417,8 +417,19 @@ export default function PausenappMvpPrototype() {
         if (authError) throw authError;
         let loadedUser: any = null;
         if (authData?.user) {
-          const { data: profile, error: profileError } = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
+          let { data: profile, error: profileError } = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
           if (profileError) throw profileError;
+
+          // A bakery signup has no authenticated session until the email is confirmed.
+          // Finish the bakery application automatically on the first confirmed session.
+          if (!profile && authData.user.user_metadata?.account_type === 'bakery_application') {
+            await finalizeBakeryApplication(authData.user);
+            const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
+            if (profileResult.error) throw profileResult.error;
+            profile = profileResult.data;
+          }
+
+          if (!profile) throw new Error('Für dieses Konto wurde noch kein Benutzerprofil angelegt.');
           loadedUser = createUserFromProfile(authData.user, profile);
           setUser(loadedUser);
         }
@@ -552,6 +563,25 @@ export default function PausenappMvpPrototype() {
     }
   }
 
+  async function finalizeBakeryApplication(authUser: any) {
+    if (!supabase || !authUser?.id) throw new Error('Keine bestätigte Supabase-Session vorhanden.');
+    const meta = authUser.user_metadata || {};
+    const { error } = await supabase.rpc('register_bakery_application', {
+      p_user_id: authUser.id,
+      p_email: authUser.email || meta.email || '',
+      p_bakery_name: meta.bakery_name || meta.full_name || 'Bäckerei',
+      p_company_name: meta.company_name || '',
+      p_city: meta.city || '',
+      p_address: meta.address || '',
+      p_phone: meta.phone || '',
+      p_vat_number: meta.vat_number || '',
+      p_school_name: meta.school_name || null,
+      p_school_city: meta.school_city || meta.city || null,
+      p_school_address: meta.school_address || null
+    });
+    if (error) throw error;
+  }
+
   async function registerBakery() {
     if (!supabase) return setBakeryRegistrationNotice('Supabase ist nicht konfiguriert.');
     const form = bakeryRegistration;
@@ -566,32 +596,33 @@ export default function PausenappMvpPrototype() {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: form.email.trim(),
         password: form.password,
-        options: { data: { full_name: form.name.trim(), account_type: 'bakery_application' } }
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            full_name: form.name.trim(),
+            account_type: 'bakery_application',
+            bakery_name: form.name.trim(),
+            company_name: form.legalName.trim(),
+            city: form.city.trim(),
+            address: form.address.trim(),
+            phone: form.phone.trim(),
+            vat_number: form.vatNumber.trim(),
+            school_name: form.schoolName.trim(),
+            school_city: form.schoolCity.trim() || form.city.trim(),
+            school_address: form.schoolAddress.trim()
+          }
+        }
       });
       if (signUpError) throw signUpError;
       if (!signUpData.user) throw new Error('Registrierung konnte nicht erstellt werden.');
 
-      if (!signUpData.session) {
-        setBakeryRegistrationNotice('Registrierung erstellt. Bitte bestätige zuerst die E-Mail-Adresse und melde dich danach an. Die Bäckerei-Freigabe wird anschließend abgeschlossen.');
-        return;
+      if (signUpData.session) {
+        await finalizeBakeryApplication(signUpData.user);
+        await supabase.auth.signOut();
+        setBakeryRegistrationNotice('Registrierung eingegangen. Die Bäckerei wartet jetzt auf die Freigabe durch den Pausenapp-Admin.');
+      } else {
+        setBakeryRegistrationNotice('Registrierung erstellt. Bitte bestätige jetzt die E-Mail-Adresse. Danach wird der Bäckereiantrag beim ersten Öffnen der Pausenapp automatisch fertiggestellt.');
       }
-
-      const { error: applicationError } = await supabase.rpc('register_bakery_application', {
-        p_name: form.name.trim(),
-        p_legal_name: form.legalName.trim() || null,
-        p_phone: form.phone.trim() || null,
-        p_address: form.address.trim() || null,
-        p_vat_number: form.vatNumber.trim() || null,
-        p_city: form.city.trim(),
-        p_school_name: form.schoolName.trim() || null,
-        p_school_city: form.schoolCity.trim() || form.city.trim(),
-        p_school_address: form.schoolAddress.trim() || null
-      });
-      if (applicationError) throw applicationError;
-
-      await supabase.auth.signOut();
-      setUser(null);
-      setBakeryRegistrationNotice('Registrierung eingegangen. Die Bäckerei wird jetzt vom Pausenapp-Admin geprüft und nach Freigabe aktiviert.');
       setBakeryRegistration((prev) => ({ ...prev, password: '' }));
     } catch (error) {
       setBakeryRegistrationNotice(`Registrierung fehlgeschlagen: ${getNetworkErrorMessage(error)}`);
@@ -606,8 +637,15 @@ export default function PausenappMvpPrototype() {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
       if (error) throw error;
-      const { data: profile, error: profileError } = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', data.user.id).maybeSingle();
+      let { data: profile, error: profileError } = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', data.user.id).maybeSingle();
       if (profileError) throw profileError;
+      if (!profile && data.user.user_metadata?.account_type === 'bakery_application') {
+        await finalizeBakeryApplication(data.user);
+        const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', data.user.id).maybeSingle();
+        if (profileResult.error) throw profileResult.error;
+        profile = profileResult.data;
+      }
+      if (!profile) throw new Error('Für dieses Konto wurde noch kein Benutzerprofil angelegt.');
       const loggedInUser = createUserFromProfile(data.user, profile);
       setUser(loggedInUser);
 
