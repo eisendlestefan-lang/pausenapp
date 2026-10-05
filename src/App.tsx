@@ -776,7 +776,7 @@ export default function PausenappMvpPrototype() {
                 <div className="mt-6 space-y-3">
                   <Input value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="E-Mail" className="rounded-xl bg-white text-slate-950" />
                   <Input type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Passwort" className="rounded-xl bg-white text-slate-950" />
-                  <Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="w-full rounded-xl bg-white text-slate-950 hover:bg-slate-100">{authLoading ? 'Login...' : 'Einloggen'}</Button>
+                  <Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="w-full rounded-xl bg-white font-bold !text-slate-950 hover:bg-slate-100 hover:!text-slate-950">{authLoading ? 'Login...' : 'Einloggen'}</Button>
                 </div>
                 {backendNotice && backendNotice !== 'Supabase verbunden' && <p className="mt-4 text-xs text-slate-400">{backendNotice}</p>}
               </CardContent>
