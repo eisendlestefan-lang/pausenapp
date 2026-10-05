@@ -407,6 +407,7 @@ export default function PausenappMvpPrototype() {
   const [issuedChildren, setIssuedChildren] = useState<Record<string, boolean>>({});
   const [bakeryWeekOffset, setBakeryWeekOffset] = useState(0);
   const [bakeryOrderCountsByDate, setBakeryOrderCountsByDate] = useState<Record<string, number>>({});
+  const [bakeryApproval, setBakeryApproval] = useState<{ name: string; approvalStatus: string; active: boolean } | null>(null);
 
   useEffect(() => {
     async function loadSupabaseData() {
@@ -441,13 +442,22 @@ export default function PausenappMvpPrototype() {
         }
         if (loadedUser?.id) {
           if (loadedUser.role === 'bakery') {
-            await loadBakeryData(loadedUser);
-            setActiveTab('schule');
+            const approval = await loadMyBakeryApproval(loadedUser);
+            if (approval?.approvalStatus === 'active' && approval.active) {
+              await loadBakeryData(loadedUser);
+              setActiveTab('schule');
+              setBackendNotice('Bäckerei-Daten aus Supabase geladen');
+            } else {
+              setActiveTab('bakery-pending');
+              setBackendNotice('Bäckerei-Freigabe ausstehend');
+            }
           } else {
             await loadChildrenAndOrders(loadedUser);
+            setBackendNotice('Kinder, Produkte und Bestellungen aus Supabase geladen');
           }
+        } else {
+          setBackendNotice('Produkte aus Supabase geladen. Bitte einloggen.');
         }
-        setBackendNotice(loadedUser ? (loadedUser.role === 'bakery' ? 'Bäckerei-Daten aus Supabase geladen' : 'Kinder, Produkte und Bestellungen aus Supabase geladen') : 'Produkte aus Supabase geladen. Bitte einloggen.');
       } catch (error) {
         setBackendNotice(getNetworkErrorMessage(error));
       } finally {
@@ -631,6 +641,20 @@ export default function PausenappMvpPrototype() {
     }
   }
 
+  async function loadMyBakeryApproval(loadedUser = user) {
+    if (!supabase || !functionNeedsRealUser(loadedUser) || loadedUser?.role !== 'bakery') return null;
+    const { data, error } = await supabase.rpc('get_my_bakery_status');
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    const approval = row ? {
+      name: row.bakery_name || loadedUser.name || 'Bäckerei',
+      approvalStatus: row.approval_status || 'pending',
+      active: Boolean(row.active)
+    } : { name: loadedUser.name || 'Bäckerei', approvalStatus: 'pending', active: false };
+    setBakeryApproval(approval);
+    return approval;
+  }
+
   async function loginWithPassword() {
     if (!supabase) return setBackendNotice('Supabase ist nicht konfiguriert.');
     setAuthLoading(true);
@@ -650,9 +674,15 @@ export default function PausenappMvpPrototype() {
       setUser(loggedInUser);
 
       if (loggedInUser.role === 'bakery') {
-        await loadBakeryData(loggedInUser);
-        setActiveTab('schule');
-        setBackendNotice('Bäckerei-Login erfolgreich. Produktionsdaten geladen.');
+        const approval = await loadMyBakeryApproval(loggedInUser);
+        if (approval?.approvalStatus === 'active' && approval.active) {
+          await loadBakeryData(loggedInUser);
+          setActiveTab('schule');
+          setBackendNotice('Bäckerei-Login erfolgreich. Produktionsdaten geladen.');
+        } else {
+          setActiveTab('bakery-pending');
+          setBackendNotice('Bäckerei-Login erfolgreich. Freigabe ausstehend.');
+        }
       } else {
         await loadChildrenAndOrders(loggedInUser);
         setActiveTab('start');
@@ -692,6 +722,7 @@ export default function PausenappMvpPrototype() {
   async function logout() {
     try { if (supabase) await supabase.auth.signOut(); } catch (error) { setBackendNotice(getNetworkErrorMessage(error)); }
     setUser(null);
+    setBakeryApproval(null);
     setBackendNotice('Abgemeldet');
   }
 
@@ -941,6 +972,36 @@ export default function PausenappMvpPrototype() {
   }
 
   function printBakeryList() { window.print(); }
+
+  if (hasRealSupabaseUser && currentUser.role === 'bakery' && (!bakeryApproval || bakeryApproval.approvalStatus !== 'active' || !bakeryApproval.active)) {
+    const status = bakeryApproval?.approvalStatus || 'pending';
+    const rejected = status === 'rejected';
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-4 py-10 text-slate-950">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-10 flex items-center justify-between">
+            <div className="flex items-center gap-3"><span className="text-4xl">🥪</span><div><p className="text-2xl font-black">Pausenapp</p><p className="text-sm font-medium text-slate-500">Einfach. Bestellt.</p></div></div>
+            <button onClick={logout} className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm ring-1 ring-slate-200 hover:text-slate-950">↪ Abmelden</button>
+          </div>
+          <Card className="overflow-hidden rounded-[2rem] border-0 bg-white shadow-xl ring-1 ring-slate-200">
+            <div className={`p-7 text-white ${rejected ? 'bg-gradient-to-r from-red-600 to-rose-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`}>
+              <div className="flex items-center gap-3"><span className="text-4xl">{rejected ? '✕' : '⏳'}</span><div><p className="text-sm font-black uppercase tracking-wide text-white/80">Bäckerei-Registrierung</p><h1 className="mt-1 text-3xl font-black">{rejected ? 'Registrierung nicht freigegeben' : 'Freigabe ausstehend'}</h1></div></div>
+            </div>
+            <CardContent className="p-7 sm:p-9">
+              <h2 className="text-2xl font-black">{bakeryApproval?.name || currentUser.name}</h2>
+              <p className="mt-2 text-slate-500">{currentUser.email}</p>
+              {!rejected ? (
+                <>
+                  <div className="mt-6 rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-200"><p className="font-black text-amber-950">🟡 Dein Konto wird geprüft.</p><p className="mt-2 leading-relaxed text-amber-900">Wir prüfen die Bäckereiangaben und die vorgeschlagenen Schulen. Sobald die Freigabe erfolgt ist, wird das Produktionsdashboard automatisch für dieses Konto verfügbar.</p></div>
+                  <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-400">1</p><p className="mt-1 font-black">Registrierung</p><p className="mt-1 text-sm text-emerald-700">✓ abgeschlossen</p></div><div className="rounded-2xl bg-amber-50 p-4"><p className="text-xs font-bold uppercase text-amber-500">2</p><p className="mt-1 font-black">Prüfung</p><p className="mt-1 text-sm text-amber-700">läuft</p></div><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase text-slate-400">3</p><p className="mt-1 font-black">Freischaltung</p><p className="mt-1 text-sm text-slate-500">danach verfügbar</p></div></div>
+                </>
+              ) : <div className="mt-6 rounded-2xl bg-red-50 p-5 ring-1 ring-red-200"><p className="font-black text-red-950">Der Antrag wurde abgelehnt.</p><p className="mt-2 text-red-800">Bitte kontaktiere den Pausenapp-Administrator, wenn Angaben korrigiert oder erneut geprüft werden sollen.</p></div>}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (!hasRealSupabaseUser && !isGuestMode) {
     return (
