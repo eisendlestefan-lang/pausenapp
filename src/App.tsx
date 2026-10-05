@@ -393,6 +393,7 @@ export default function PausenappMvpPrototype() {
   const [isSaving, setIsSaving] = useState(false);
   const [issuedChildren, setIssuedChildren] = useState<Record<string, boolean>>({});
   const [bakeryWeekOffset, setBakeryWeekOffset] = useState(0);
+  const [bakeryOrderCountsByDate, setBakeryOrderCountsByDate] = useState<Record<string, number>>({});
 
   useEffect(() => {
     async function loadSupabaseData() {
@@ -459,6 +460,12 @@ export default function PausenappMvpPrototype() {
       const { data: orderData, error: orderError } = await supabase.from('orders').select('id, parent_id, child_id, school, delivery_date, weekday, total, payment_method, payment_reference, status, confirmation_email_sent, created_at, bakery_id').eq('bakery_id', loadedUser.bakeryId).in('delivery_date', weekdays.map((day) => getDeliveryDateForWeek(day, weekOffset))).order('delivery_date', { ascending: true }).order('created_at', { ascending: false }).limit(500);
       if (orderError) throw orderError;
       const bakeryOrders = Array.isArray(orderData) ? orderData : [];
+      const orderCountsByDate: Record<string, number> = {};
+      bakeryOrders.forEach((order: any) => {
+        if (!order.delivery_date) return;
+        orderCountsByDate[order.delivery_date] = (orderCountsByDate[order.delivery_date] || 0) + 1;
+      });
+      setBakeryOrderCountsByDate(orderCountsByDate);
       const childIds = Array.from(new Set(bakeryOrders.map((order: any) => order.child_id).filter(Boolean)));
       let bakeryChildren: Child[] = [];
       if (childIds.length) {
@@ -577,7 +584,7 @@ export default function PausenappMvpPrototype() {
   const adminTodoSummary = useMemo(() => ({ openPayments: parentOrderStats.openCount, productionItems: productSummary.reduce((sum, row) => sum + row.quantity, 0), emailsOpen: completedOrders.filter((order) => order.email !== 'gesendet').length }), [completedOrders, parentOrderStats.openCount, productSummary]);
   const bakeryProductCount = productSummary.reduce((sum, row) => sum + row.quantity, 0);
   const activeBakeryDeliveryDate = getDeliveryDateForWeek(activeDay, bakeryWeekOffset);
-  const bakeryOrderCount = completedOrders.filter((order) => order.deliveryDate === activeBakeryDeliveryDate).length;
+  const bakeryOrderCount = bakeryOrderCountsByDate[activeBakeryDeliveryDate] || 0;
   const bakeryAllergyRows = schoolRows.filter(({ child }) => child.allergies && child.allergies.toLowerCase() !== 'keine');
   const bakerySchoolCount = new Set(schoolRows.map(({ child }) => child.school)).size;
   const bakeryRevenue = schoolRows.reduce((sum, row) => sum + row.total, 0);
