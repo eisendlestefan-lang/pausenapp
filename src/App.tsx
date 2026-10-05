@@ -504,6 +504,17 @@ export default function PausenappMvpPrototype() {
       setSchoolOptions(availableSchools);
       if (!newChildSchoolId && availableSchools[0]?.id) setNewChildSchoolId(availableSchools[0].id);
 
+      // Produkte nach erfolgreichem Login nochmals laden.
+      // Beim ersten App-Start kann die anonyme Abfrage wegen RLS leer sein;
+      // ohne diesen Reload blieben sonst nur Demo-Produkte ohne bakery_id im State.
+      const { data: parentProductData, error: parentProductError } = await supabase
+        .from('products')
+        .select('id, name, description, price, tags, active, bakery_id')
+        .eq('active', true)
+        .order('name');
+      if (parentProductError) throw parentProductError;
+      setMenuProducts(Array.isArray(parentProductData) ? parentProductData.map(normalizeProduct) : []);
+
       const { data: childData, error: childError } = await supabase.from('children').select('id, name, school, school_id, class_name, allergies').eq('parent_id', loadedUser.id).order('created_at', { ascending: true });
       if (childError) throw childError;
       const normalizedChildren = Array.isArray(childData)
