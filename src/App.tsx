@@ -489,8 +489,16 @@ export default function PausenappMvpPrototype() {
       if (profileError) throw profileError;
       const loggedInUser = createUserFromProfile(data.user, profile);
       setUser(loggedInUser);
-      await loadChildrenAndOrders(loggedInUser);
-      setBackendNotice('Login erfolgreich. Kinder und Bestellungen geladen');
+
+      if (loggedInUser.role === 'bakery') {
+        await loadBakeryData(loggedInUser);
+        setActiveTab('schule');
+        setBackendNotice('Bäckerei-Login erfolgreich. Produktionsdaten geladen.');
+      } else {
+        await loadChildrenAndOrders(loggedInUser);
+        setActiveTab('start');
+        setBackendNotice('Login erfolgreich. Kinder und Bestellungen geladen');
+      }
     } catch (error) {
       setBackendNotice(`Login fehlgeschlagen: ${getNetworkErrorMessage(error)}`);
     } finally {
