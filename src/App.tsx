@@ -373,6 +373,10 @@ export default function PausenappMvpPrototype() {
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState(ADMIN_EMAIL);
   const [loginPassword, setLoginPassword] = useState('');
+  const [showParentRegistration, setShowParentRegistration] = useState(false);
+  const [parentRegistration, setParentRegistration] = useState({ name: '', email: '', password: '' });
+  const [parentRegistrationNotice, setParentRegistrationNotice] = useState('');
+  const [parentRegistrationLoading, setParentRegistrationLoading] = useState(false);
   const [showBakeryRegistration, setShowBakeryRegistration] = useState(false);
   const [bakeryRegistration, setBakeryRegistration] = useState({
     name: '', legalName: '', email: '', phone: '', address: '', vatNumber: '', city: '', password: '',
@@ -431,10 +435,16 @@ export default function PausenappMvpPrototype() {
           let { data: profile, error: profileError } = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
           if (profileError) throw profileError;
 
-          // A bakery signup has no authenticated session until the email is confirmed.
-          // Finish the bakery application automatically on the first confirmed session.
+          // Registration signups may not have an authenticated session until the email is confirmed.
+          // Finish the matching profile automatically on the first confirmed session.
           if (!profile && authData.user.user_metadata?.account_type === 'bakery_application') {
             await finalizeBakeryApplication(authData.user);
+            const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
+            if (profileResult.error) throw profileResult.error;
+            profile = profileResult.data;
+          }
+          if (!profile && authData.user.user_metadata?.account_type === 'parent_registration') {
+            await finalizeParentRegistration(authData.user);
             const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
             if (profileResult.error) throw profileResult.error;
             profile = profileResult.data;
@@ -600,6 +610,57 @@ export default function PausenappMvpPrototype() {
       setBackendNotice('Bäckerei-Daten aus Supabase geladen');
     } catch (error) {
       setBackendNotice(`Bäckerei-Daten konnten nicht geladen werden: ${getNetworkErrorMessage(error)}`);
+    }
+  }
+
+  async function finalizeParentRegistration(authUser: any) {
+    if (!supabase || !authUser?.id) throw new Error('Keine bestätigte Supabase-Session vorhanden.');
+    const meta = authUser.user_metadata || {};
+    const { error } = await supabase.rpc('register_parent_profile', {
+      p_user_id: authUser.id,
+      p_email: authUser.email || meta.email || '',
+      p_full_name: meta.full_name || authUser.email || 'Elternkonto'
+    });
+    if (error) throw error;
+  }
+
+  async function registerParent() {
+    if (!supabase) return setParentRegistrationNotice('Supabase ist nicht konfiguriert.');
+    const form = parentRegistration;
+    if (!form.name.trim() || !form.email.trim() || !form.password) {
+      return setParentRegistrationNotice('Bitte Name, E-Mail und Passwort ausfüllen.');
+    }
+    if (form.password.length < 6) return setParentRegistrationNotice('Das Passwort muss mindestens 6 Zeichen haben.');
+
+    setParentRegistrationLoading(true);
+    setParentRegistrationNotice('');
+    try {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: form.email.trim(),
+        password: form.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            full_name: form.name.trim(),
+            account_type: 'parent_registration'
+          }
+        }
+      });
+      if (signUpError) throw signUpError;
+      if (!signUpData.user) throw new Error('Registrierung konnte nicht erstellt werden.');
+
+      if (signUpData.session) {
+        await finalizeParentRegistration(signUpData.user);
+        await supabase.auth.signOut();
+        setParentRegistrationNotice('Elternkonto wurde erstellt. Du kannst dich jetzt einloggen.');
+      } else {
+        setParentRegistrationNotice('Registrierung erstellt. Bitte bestätige jetzt deine E-Mail-Adresse. Danach kannst du dich direkt einloggen.');
+      }
+      setParentRegistration((prev) => ({ ...prev, password: '' }));
+    } catch (error) {
+      setParentRegistrationNotice(`Registrierung fehlgeschlagen: ${getNetworkErrorMessage(error)}`);
+    } finally {
+      setParentRegistrationLoading(false);
     }
   }
 
@@ -769,6 +830,12 @@ export default function PausenappMvpPrototype() {
       if (profileError) throw profileError;
       if (!profile && data.user.user_metadata?.account_type === 'bakery_application') {
         await finalizeBakeryApplication(data.user);
+        const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', data.user.id).maybeSingle();
+        if (profileResult.error) throw profileResult.error;
+        profile = profileResult.data;
+      }
+      if (!profile && data.user.user_metadata?.account_type === 'parent_registration') {
+        await finalizeParentRegistration(data.user);
         const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', data.user.id).maybeSingle();
         if (profileResult.error) throw profileResult.error;
         profile = profileResult.data;
@@ -1330,8 +1397,10 @@ export default function PausenappMvpPrototype() {
                   <Input value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="E-Mail" className="rounded-xl bg-white text-slate-950" />
                   <Input type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Passwort" className="rounded-xl bg-white text-slate-950" />
                   <Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="w-full rounded-xl bg-white font-bold !text-slate-950 hover:bg-slate-100 hover:!text-slate-950">{authLoading ? 'Login...' : 'Einloggen'}</Button>
-                  <button type="button" onClick={() => setShowBakeryRegistration((value) => !value)} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:border-emerald-400 hover:bg-slate-900">🥐 {showBakeryRegistration ? 'Registrierung schließen' : 'Als Bäckerei registrieren'}</button>
+                  <button type="button" onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-violet-300 transition hover:border-violet-400 hover:bg-slate-900">👨‍👩‍👧 {showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}</button>
+                  <button type="button" onClick={() => { setShowBakeryRegistration((value) => !value); setShowParentRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:border-emerald-400 hover:bg-slate-900">🥐 {showBakeryRegistration ? 'Registrierung schließen' : 'Als Bäckerei registrieren'}</button>
                 </div>
+                {showParentRegistration && <div className="mt-5 rounded-2xl bg-white p-5 text-slate-950"><div className="mb-4"><p className="text-lg font-black">Elternkonto registrieren</p><p className="mt-1 text-xs text-slate-500">Nach der E-Mail-Bestätigung kannst du dich direkt einloggen, dein Kind anlegen und die Schule auswählen.</p></div><div className="space-y-3"><Input value={parentRegistration.name} onChange={(e) => setParentRegistration((p) => ({ ...p, name: e.target.value }))} placeholder="Vor- und Nachname *" /><Input type="email" value={parentRegistration.email} onChange={(e) => setParentRegistration((p) => ({ ...p, email: e.target.value }))} placeholder="E-Mail *" /><Input type="password" value={parentRegistration.password} onChange={(e) => setParentRegistration((p) => ({ ...p, password: e.target.value }))} placeholder="Passwort *" /></div><Button type="button" onClick={registerParent} disabled={parentRegistrationLoading} className="mt-4 w-full rounded-xl bg-violet-600 font-black text-white hover:bg-violet-700">{parentRegistrationLoading ? 'Registrierung läuft...' : 'Elternkonto erstellen'}</Button>{parentRegistrationNotice && <p className="mt-3 rounded-xl bg-slate-100 p-3 text-xs font-semibold text-slate-700">{parentRegistrationNotice}</p>}</div>}
                 {showBakeryRegistration && <div className="mt-5 rounded-2xl bg-white p-5 text-slate-950"><div className="mb-4"><p className="text-lg font-black">Bäckerei registrieren</p><p className="mt-1 text-xs text-slate-500">Nach der Registrierung wird dein Betrieb von Pausenapp geprüft. Eine Schule kann direkt vorgeschlagen werden.</p></div><div className="grid gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.name} onChange={(e) => setBakeryRegistration((p) => ({ ...p, name: e.target.value }))} placeholder="Bäckereiname *" /><Input value={bakeryRegistration.legalName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, legalName: e.target.value }))} placeholder="Firmenname" /><Input value={bakeryRegistration.city} onChange={(e) => setBakeryRegistration((p) => ({ ...p, city: e.target.value }))} placeholder="Ort *" /><Input value={bakeryRegistration.address} onChange={(e) => setBakeryRegistration((p) => ({ ...p, address: e.target.value }))} placeholder="Adresse" /><Input value={bakeryRegistration.phone} onChange={(e) => setBakeryRegistration((p) => ({ ...p, phone: e.target.value }))} placeholder="Telefon" /><Input value={bakeryRegistration.vatNumber} onChange={(e) => setBakeryRegistration((p) => ({ ...p, vatNumber: e.target.value }))} placeholder="MwSt.-Nr." /><Input type="email" value={bakeryRegistration.email} onChange={(e) => setBakeryRegistration((p) => ({ ...p, email: e.target.value }))} placeholder="E-Mail *" /><Input type="password" value={bakeryRegistration.password} onChange={(e) => setBakeryRegistration((p) => ({ ...p, password: e.target.value }))} placeholder="Passwort *" /></div><div className="my-5 border-t border-slate-200 pt-5"><p className="font-black">Erste Schule vorschlagen <span className="font-medium text-slate-400">(optional)</span></p><div className="mt-3 grid gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.schoolName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolName: e.target.value }))} placeholder="Name der Schule" /><Input value={bakeryRegistration.schoolCity} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolCity: e.target.value }))} placeholder="Ort der Schule" /><Input value={bakeryRegistration.schoolAddress} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolAddress: e.target.value }))} placeholder="Adresse der Schule" className="sm:col-span-2" /></div></div><Button type="button" onClick={registerBakery} disabled={bakeryRegistrationLoading} className="w-full rounded-xl bg-emerald-600 font-black text-white hover:bg-emerald-700">{bakeryRegistrationLoading ? 'Registrierung läuft...' : 'Registrierung absenden'}</Button>{bakeryRegistrationNotice && <p className="mt-3 rounded-xl bg-slate-100 p-3 text-xs font-semibold text-slate-700">{bakeryRegistrationNotice}</p>}</div>}
                 {backendNotice && backendNotice !== 'Supabase verbunden' && <p className="mt-4 text-xs text-slate-400">{backendNotice}</p>}
               </CardContent>
