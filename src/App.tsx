@@ -1264,6 +1264,7 @@ export default function PausenappMvpPrototype() {
     try {
       const savedOrders: CompletedOrder[] = [];
       let emailFailures = 0;
+      const emailFailureReasons: string[] = [];
 
       for (const line of checkoutLines) {
         const result = await saveCheckoutLineToSupabase({ line, checkoutId, paymentReference, status });
@@ -1285,7 +1286,10 @@ export default function PausenappMvpPrototype() {
         };
         const emailResult = await sendCheckoutLineEmail(savedOrder, line);
         savedOrder = { ...savedOrder, email: emailResult.sent ? 'gesendet' : 'vorgemerkt' };
-        if (!emailResult.sent) emailFailures += 1;
+        if (!emailResult.sent) {
+          emailFailures += 1;
+          emailFailureReasons.push(`${line.child.name}: ${emailResult.reason || 'Unbekannter Fehler'}`);
+        }
         savedOrders.push(savedOrder);
       }
 
@@ -1297,8 +1301,8 @@ export default function PausenappMvpPrototype() {
       setLastOrder({ ...savedOrders[0], child: `${checkoutChildrenCount} Kind(er)`, day: 'Sammelbestellung', total: checkoutTotal, paymentReference });
       setLastConfirmation(emailFailures === 0
         ? `Sammelbestellung erfolgreich: ${savedOrders.length} Teilbestellung(en) für ${checkoutChildrenCount} Kind(er).`
-        : `Sammelbestellung gespeichert. ${emailFailures} Bestätigungs-E-Mail(s) konnten nicht versendet werden.`);
-      setBackendNotice(emailFailures === 0 ? 'Sammelbestellung gespeichert und E-Mails gesendet' : 'Sammelbestellung gespeichert, E-Mail-Versand teilweise offen');
+        : `Sammelbestellung gespeichert. ${emailFailures} Bestätigungs-E-Mail(s) konnten nicht versendet werden. Fehler: ${emailFailureReasons.join(' | ')}`);
+      setBackendNotice(emailFailures === 0 ? 'Sammelbestellung gespeichert und E-Mails gesendet' : `E-Mail-Fehler: ${emailFailureReasons.join(' | ')}`);
       setOrders({});
       await loadChildrenAndOrders(user);
     } catch (error) {
