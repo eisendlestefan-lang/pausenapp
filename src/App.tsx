@@ -1133,11 +1133,31 @@ export default function PausenappMvpPrototype() {
 
   async function invokeEmailFunction(type: string, payload: any) {
     if (!supabase) return { sent: false, reason: 'Supabase ist nicht verbunden.' };
+    if (!EMAIL_FUNCTION_NAME) return { sent: false, reason: 'EMAIL_FUNCTION_NAME ist leer.' };
     try {
-      const { error } = await supabase.functions.invoke(EMAIL_FUNCTION_NAME, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: { type, payload } });
-      if (error) return { sent: false, reason: error.message };
-      return { sent: true };
-    } catch (error) { return { sent: false, reason: getNetworkErrorMessage(error) }; }
+      const { data, error } = await supabase.functions.invoke(EMAIL_FUNCTION_NAME, {
+        method: 'POST',
+        body: { type, payload }
+      });
+      if (error) {
+        let details = error.message || 'Unbekannter Edge-Function-Fehler';
+        const context = (error as any)?.context;
+        if (context) {
+          try {
+            const status = context.status ? `HTTP ${context.status}` : '';
+            const bodyText = typeof context.clone === 'function' ? await context.clone().text() : '';
+            details = [status, details, bodyText].filter(Boolean).join(' · ');
+          } catch {
+            // Ignore secondary debug errors and keep the original message.
+          }
+        }
+        return { sent: false, reason: `${EMAIL_FUNCTION_NAME}: ${details}` };
+      }
+      return { sent: true, data };
+    } catch (error) {
+      const rawMessage = error instanceof Error ? error.message : String(error || 'Unbekannter Fehler');
+      return { sent: false, reason: `${EMAIL_FUNCTION_NAME}: ${rawMessage}` };
+    }
   }
 
   async function sendOrderEmails({ savedOrder, selectedProducts }: { savedOrder: CompletedOrder; selectedProducts: Product[] }) {
@@ -1288,7 +1308,7 @@ export default function PausenappMvpPrototype() {
         savedOrder = { ...savedOrder, email: emailResult.sent ? 'gesendet' : 'vorgemerkt' };
         if (!emailResult.sent) {
           emailFailures += 1;
-          emailFailureReasons.push(`${line.child.name}: ${emailResult.reason || 'Unbekannter Fehler'}`);
+          emailFailureReasons.push(`${line.child.name} · ${line.day}: ${emailResult.reason || 'Unbekannter Fehler'}`);
         }
         savedOrders.push(savedOrder);
       }
@@ -1302,7 +1322,7 @@ export default function PausenappMvpPrototype() {
       setLastConfirmation(emailFailures === 0
         ? `Sammelbestellung erfolgreich: ${savedOrders.length} Teilbestellung(en) für ${checkoutChildrenCount} Kind(er).`
         : `Sammelbestellung gespeichert. ${emailFailures} Bestätigungs-E-Mail(s) konnten nicht versendet werden. Fehler: ${emailFailureReasons.join(' | ')}`);
-      setBackendNotice(emailFailures === 0 ? 'Sammelbestellung gespeichert und E-Mails gesendet' : `E-Mail-Fehler: ${emailFailureReasons.join(' | ')}`);
+      setBackendNotice(emailFailures === 0 ? 'Sammelbestellung gespeichert und E-Mails gesendet' : 'Sammelbestellung gespeichert, E-Mail-Versand teilweise offen');
       setOrders({});
       await loadChildrenAndOrders(user);
     } catch (error) {
