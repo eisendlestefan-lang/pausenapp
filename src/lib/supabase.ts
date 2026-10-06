@@ -7,6 +7,7 @@ export const env = {
   paypalPaymentLink: import.meta.env.VITE_PAYPAL_PAYMENT_LINK || "",
   bankIban: import.meta.env.VITE_BANK_IBAN || "",
   bankRecipient: import.meta.env.VITE_BANK_RECIPIENT || "",
+  emailFunctionName: import.meta.env.VITE_EMAIL_FUNCTION_NAME || "email-versand",
 };
 
 export const isSupabaseConfigured =
