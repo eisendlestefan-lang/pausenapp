@@ -294,12 +294,14 @@ function filterOrdersBySearch(ordersList: CompletedOrder[], searchTerm: string) 
 }
 
 function getParentOrderStats(ordersList: CompletedOrder[]) {
+  const activeOrders = ordersList.filter((order) => order.status !== 'storniert');
   return {
-    count: ordersList.length,
-    openCount: ordersList.filter((order) => order.status === 'offen').length,
-    paidCount: ordersList.filter((order) => order.status === 'bezahlt').length,
-    openTotal: ordersList.filter((order) => order.status === 'offen').reduce((sum, order) => sum + order.total, 0),
-    paidTotal: ordersList.filter((order) => order.status === 'bezahlt').reduce((sum, order) => sum + order.total, 0)
+    count: activeOrders.length,
+    cancelledCount: ordersList.filter((order) => order.status === 'storniert').length,
+    openCount: activeOrders.filter((order) => order.status === 'offen').length,
+    paidCount: activeOrders.filter((order) => order.status === 'bezahlt').length,
+    openTotal: activeOrders.filter((order) => order.status === 'offen').reduce((sum, order) => sum + order.total, 0),
+    paidTotal: activeOrders.filter((order) => order.status === 'bezahlt').reduce((sum, order) => sum + order.total, 0)
   };
 }
 
@@ -963,7 +965,7 @@ export default function PausenappMvpPrototype() {
     return list;
   }, [completedOrders, adminOrderSearch, adminFilter]);
   const parentOrderStats = useMemo(() => getParentOrderStats(completedOrders), [completedOrders]);
-  const adminTodoSummary = useMemo(() => ({ openPayments: parentOrderStats.openCount, productionItems: productSummary.reduce((sum, row) => sum + row.quantity, 0), emailsOpen: completedOrders.filter((order) => order.email !== 'gesendet').length }), [completedOrders, parentOrderStats.openCount, productSummary]);
+  const adminTodoSummary = useMemo(() => ({ openPayments: parentOrderStats.openCount, productionItems: productSummary.reduce((sum, row) => sum + row.quantity, 0), emailsOpen: completedOrders.filter((order) => order.status !== 'storniert' && order.email !== 'gesendet').length }), [completedOrders, parentOrderStats.openCount, productSummary]);
   const bakeryProductCount = productSummary.reduce((sum, row) => sum + row.quantity, 0);
   const activeBakeryDeliveryDate = getDeliveryDateForWeek(activeDay, bakeryWeekOffset);
   const bakeryOrderCount = bakeryOrderCountsByDate[activeBakeryDeliveryDate] || 0;
@@ -1445,14 +1447,18 @@ export default function PausenappMvpPrototype() {
   async function markPaid(orderId: string) {
     const orderToConfirm = completedOrders.find((order) => order.id === orderId);
     const checkoutId = orderToConfirm?.checkoutId || null;
-    setCompletedOrders((prev) => prev.map((order) => checkoutId && order.checkoutId === checkoutId ? { ...order, status: 'bezahlt' } : order.id === orderId ? { ...order, status: 'bezahlt' } : order));
+    setCompletedOrders((prev) => prev.map((order) => checkoutId && order.checkoutId === checkoutId && order.status === 'offen' ? { ...order, status: 'bezahlt' } : order.id === orderId && order.status === 'offen' ? { ...order, status: 'bezahlt' } : order));
     if (supabase && functionNeedsRealUser(user) && isUuid(orderId)) {
       setIsSaving(true);
       try {
-        const query = supabase.from('orders').update({ status: 'bezahlt' });
-        const { error } = checkoutId ? await query.eq('checkout_id', checkoutId) : await query.eq('id', orderId);
+        let paymentUpdate = supabase.from('orders').update({ status: 'bezahlt' });
+        paymentUpdate = checkoutId ? paymentUpdate.eq('checkout_id', checkoutId).eq('status', 'offen') : paymentUpdate.eq('id', orderId).eq('status', 'offen');
+        const { error } = await paymentUpdate;
         if (error) throw error;
-        if (orderToConfirm) await invokeEmailFunction('payment_confirmed', { orderId, checkoutId, parentName: orderToConfirm.parent, parentEmail: orderToConfirm.parentEmail, childName: checkoutId ? 'Sammelbestellung' : orderToConfirm.child, total: checkoutId ? completedOrders.filter((order) => order.checkoutId === checkoutId).reduce((sum, order) => sum + order.total, 0) : orderToConfirm.total, paymentReference: orderToConfirm.paymentReference, adminEmail: ADMIN_EMAIL });
+        if (orderToConfirm) {
+          const payableCheckoutOrders = checkoutId ? completedOrders.filter((order) => order.checkoutId === checkoutId && order.status !== 'storniert') : [orderToConfirm];
+          await invokeEmailFunction('payment_confirmed', { orderId, checkoutId, parentName: orderToConfirm.parent, parentEmail: orderToConfirm.parentEmail, childName: checkoutId ? 'Sammelbestellung' : orderToConfirm.child, total: payableCheckoutOrders.reduce((sum, order) => sum + order.total, 0), paymentReference: orderToConfirm.paymentReference, adminEmail: ADMIN_EMAIL });
+        }
         setBackendNotice(checkoutId ? 'Gesamte Sammelbestellung als bezahlt markiert' : 'Zahlung bestätigt');
       } catch (error) { setBackendNotice(`Zahlungsstatus konnte nicht gespeichert werden: ${getNetworkErrorMessage(error)}`); }
       finally { setIsSaving(false); }
