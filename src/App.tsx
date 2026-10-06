@@ -584,8 +584,15 @@ export default function PausenappMvpPrototype() {
         p_deadline_time: bakeryPaymentForm.deadlineTime || '18:00'
       });
       if (error) throw error;
+
+      const { error: deadlineError } = await supabase.rpc('update_my_bakery_deadline', {
+        p_deadline_days_before: Math.max(0, Math.min(7, Number(bakeryPaymentForm.deadlineDaysBefore) || 0)),
+        p_deadline_time: bakeryPaymentForm.deadlineTime || '18:00'
+      });
+      if (deadlineError) throw deadlineError;
+
       await loadMyBakeryPaymentSettings(currentUser);
-      setBackendNotice('Zahlungsdaten der Bäckerei wurden gespeichert.');
+      setBackendNotice('Zahlungsdaten und Bestellfrist der Bäckerei wurden gespeichert.');
     } catch (error) {
       setBackendNotice(`Zahlungsdaten konnten nicht gespeichert werden: ${getNetworkErrorMessage(error)}`);
     } finally {
