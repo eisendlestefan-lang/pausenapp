@@ -567,34 +567,54 @@ export default function PausenappMvpPrototype() {
 
   async function saveMyBakeryPaymentSettings() {
     if (!supabase || currentUser.role !== 'bakery' || !functionNeedsRealUser(currentUser)) return;
+    if (!currentUser.bakeryId) return setBackendNotice('Bäckerei-ID fehlt. Bitte neu anmelden.');
     if (!bakeryPaymentForm.bankTransferEnabled && !bakeryPaymentForm.paypalEnabled) return setBackendNotice('Bitte mindestens eine Zahlungsart aktivieren.');
     if (bakeryPaymentForm.bankTransferEnabled && !bakeryPaymentForm.accountHolder.trim()) return setBackendNotice('Für Überweisung bitte den Kontoinhaber eingeben.');
     if (bakeryPaymentForm.bankTransferEnabled && !bakeryPaymentForm.iban.trim()) return setBackendNotice('Für Überweisung bitte eine IBAN eingeben.');
     if (bakeryPaymentForm.paypalEnabled && !bakeryPaymentForm.paypalLink.trim()) return setBackendNotice('Für PayPal bitte einen PayPal-Link hinterlegen.');
+
+    const deadlineDays = Math.max(0, Math.min(7, Number(bakeryPaymentForm.deadlineDaysBefore) || 0));
+    const deadlineTime = bakeryPaymentForm.deadlineTime || '18:00';
+
     setIsSaving(true);
     try {
-      const { error } = await supabase.rpc('update_my_bakery_payment_settings', {
+      // Zahlungsdaten wie bisher speichern.
+      const { error: paymentError } = await supabase.rpc('update_my_bakery_payment_settings', {
         p_account_holder: bakeryPaymentForm.accountHolder.trim(),
         p_iban: bakeryPaymentForm.iban.trim().replace(/\s+/g, '').toUpperCase(),
         p_bic: bakeryPaymentForm.bic.trim().replace(/\s+/g, '').toUpperCase(),
         p_paypal_link: bakeryPaymentForm.paypalLink.trim(),
         p_bank_transfer_enabled: bakeryPaymentForm.bankTransferEnabled,
         p_paypal_enabled: bakeryPaymentForm.paypalEnabled,
-        p_deadline_days_before: Math.max(0, Math.min(7, Number(bakeryPaymentForm.deadlineDaysBefore) || 0)),
-        p_deadline_time: bakeryPaymentForm.deadlineTime || '18:00'
+        p_deadline_days_before: deadlineDays,
+        p_deadline_time: deadlineTime
       });
-      if (error) throw error;
+      if (paymentError) throw paymentError;
 
-      const { error: deadlineError } = await supabase.rpc('update_my_bakery_deadline', {
-        p_deadline_days_before: Math.max(0, Math.min(7, Number(bakeryPaymentForm.deadlineDaysBefore) || 0)),
-        p_deadline_time: bakeryPaymentForm.deadlineTime || '18:00'
+      // Bestellfrist zusaetzlich ueber eine eindeutige RPC speichern und direkt zuruecklesen.
+      const { data: savedDeadline, error: deadlineError } = await supabase.rpc('update_my_bakery_deadline_v2', {
+        p_bakery_id: currentUser.bakeryId,
+        p_deadline_days_before: deadlineDays,
+        p_deadline_time: deadlineTime
       });
       if (deadlineError) throw deadlineError;
 
+      const deadlineRow = Array.isArray(savedDeadline) ? savedDeadline[0] : savedDeadline;
+      if (!deadlineRow) throw new Error('Bestellfrist wurde nicht gespeichert.');
+
+      const savedTime = String(deadlineRow.deadline_time || deadlineTime).slice(0, 5);
+      const savedDays = String(deadlineRow.deadline_days_before ?? deadlineDays);
+
+      setBakeryPaymentForm((prev) => ({
+        ...prev,
+        deadlineDaysBefore: savedDays,
+        deadlineTime: savedTime
+      }));
+
       await loadMyBakeryPaymentSettings(currentUser);
-      setBackendNotice('Zahlungsdaten und Bestellfrist der Bäckerei wurden gespeichert.');
+      setBackendNotice(`Gespeichert · Bestellfrist: ${savedDays} Tag(e) vorher um ${savedTime} Uhr.`);
     } catch (error) {
-      setBackendNotice(`Zahlungsdaten konnten nicht gespeichert werden: ${getNetworkErrorMessage(error)}`);
+      setBackendNotice(`Einstellungen konnten nicht gespeichert werden: ${getNetworkErrorMessage(error)}`);
     } finally {
       setIsSaving(false);
     }
