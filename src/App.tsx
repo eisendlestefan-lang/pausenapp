@@ -425,6 +425,119 @@ function AppLayoutStyles() {
 `}</style>;
 }
 
+
+function LandingSnack() {
+  return <svg viewBox="0 0 112 86" fill="none" aria-hidden="true" focusable="false">
+    <ellipse cx="56" cy="76" rx="49" ry="6" fill="#ded4b7" />
+    <path d="M10 59 55 15Q58 12 61 16L83 59Q85 64 79 66H16Q8 65 10 59Z" fill="#d79748" />
+    <path d="m14 54 43-39 21 40Z" fill="#f8df9a" stroke="#c88b40" strokeWidth="3" strokeLinejoin="round" />
+    <path d="M13 59q8-7 15 0t15 0 15 0 20-1" stroke="#6e963f" strokeWidth="7" strokeLinecap="round" />
+    <path d="m17 64 18 4 23-4 17 3" stroke="#edbd49" strokeWidth="5" strokeLinecap="round" />
+    <path d="M16 69h62" stroke="#d79748" strokeWidth="6" strokeLinecap="round" />
+    <path d="m42 36 3 1m10-9 3 1m0 16 3 1" stroke="#dfb86e" strokeWidth="3" strokeLinecap="round" />
+    <path d="M88 48c-15-9-24 6-17 19 6 11 10 12 17 9 8 3 13 1 18-11 5-13-6-23-18-17Z" fill="#cc6650" />
+    <path d="M88 48q-3-9 2-15" stroke="#6c6941" strokeWidth="3" strokeLinecap="round" />
+    <path d="M89 40q2-12 15-9-1 11-15 9Z" fill="#70984a" />
+    <path d="M77 53q-4 3-3 8" stroke="#f1b09a" strokeWidth="3" strokeLinecap="round" />
+  </svg>;
+}
+
+function LandingStyles() {
+  return <style>{`
+    .landing-page { background: #f8f9f5; color: #203e35; }
+    .landing-container { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+    .landing-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 28px 0; border-bottom: 1px solid #dfe7df; }
+    .landing-brand { display: flex; align-items: center; gap: 11px; color: #173e31; text-decoration: none; font-size: 22px; font-weight: 850; letter-spacing: -.6px; }
+    .landing-brand-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 15px; background: #e7eedb; font-size: 27px; }
+    .landing-brand-caption { display: block; margin-top: 2px; font-size: 11px; font-weight: 500; letter-spacing: 0; color: #66776c; }
+    .landing-login-link { display: flex; align-items: center; gap: 12px; padding: 10px 15px; border: 1px solid #cddacf; border-radius: 12px; font-size: 13px; font-weight: 700; text-decoration: none; color: #234a3b; }
+    .landing-hero-grid { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); align-items: start; gap: 64px; padding: 54px 0; }
+    .landing-hero-grid > *, .landing-steps > * { min-width: 0; }
+    .landing-eyebrow { display: flex; align-items: center; gap: 8px; font-size: 10px; line-height: 1.6; font-weight: 800; letter-spacing: 1.4px; color: #53755e; }
+    .landing-eyebrow > span { width: 7px; height: 7px; flex-shrink: 0; border-radius: 50%; background: #789b42; }
+    .landing-intro h1 { margin: 18px 0; font-size: clamp(34px,4.6vw,56px); line-height: 1.09; letter-spacing: -2px; font-weight: 850; color: #193f30; }
+    .landing-intro h1 > span { color: #6a8542; }
+    .landing-description { max-width: 470px; font-size: 16px; line-height: 1.75; color: #5b6b61; }
+    .landing-benefits { list-style: none; display: grid; gap: 12px; margin: 25px 0; padding: 0; }
+    .landing-benefits li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.55; font-weight: 550; }
+    .landing-benefits li > span { display: grid; place-items: center; flex: 0 0 21px; height: 21px; border-radius: 50%; background: #e5eedc; color: #44672c; font-weight: 800; }
+    .landing-demo-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .landing-demo-button { display: flex; align-items: center; justify-content: center; gap: 24px; background: #214d3b; color: #fff; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 750; }
+    .landing-demo-button:hover, .landing-submit:hover { background: #143b2b; }
+    .landing-demo-row p { font-size: 11px; line-height: 1.65; color: #6a796e; }
+    .landing-preview { display: flex; align-items: center; gap: 16px; padding: 19px; margin-top: 30px; border: 1px solid #e4dfcb; border-radius: 20px; background: #f2eddc; }
+    .landing-preview-art { position: relative; display: flex; align-items: center; flex: 0 0 88px; min-height: 74px; }
+    .landing-preview-art svg { width: 100%; height: auto; }
+    .landing-brand-icon svg { width: 34px; height: 30px; }
+    .landing-preview-copy { display: grid; gap: 5px; min-width: 0; }
+    .landing-preview-label { color: #857448; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+    .landing-preview-copy strong { font-size: 15px; line-height: 1.4; }
+    .landing-preview-copy > span:last-child { font-size: 11px; color: #797a62; line-height: 1.5; }
+    .landing-login { scroll-margin-top: 20px; border-radius: 24px; padding: 30px; background: #fff; border: 1px solid #dfe7dc; box-shadow: 0 15px 45px #1d39220a; }
+    .landing-login-symbol { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 20px; border-radius: 13px; background: #edf2e7; color: #507044; font-size: 24px; }
+    .landing-login h2 { margin-top: 8px; font-size: 25px; font-weight: 800; letter-spacing: -.8px; line-height: 1.25; }
+    .landing-login-description { margin: 10px 0 24px; color: #6b796e; font-size: 13px; line-height: 1.65; }
+    .landing-form { display: grid; gap: 17px; }
+    .landing-form label { display: block; margin-bottom: 7px; font-size: 12px; font-weight: 700; }
+    .landing-page .landing-input { width: 100%; height: 46px; padding: 10px 13px; border: 1px solid #d9e2d7; border-radius: 10px; background: #fbfcf9; color: #203e35; font-size: 16px; }
+    .landing-input::placeholder { color: #929b92; }
+    .landing-submit { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 13px 17px; background: #214d3b; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 750; }
+    .landing-submit:disabled { opacity: .55; cursor: not-allowed; }
+    .landing-register { margin-top: 24px; padding-top: 20px; border-top: 1px solid #edf0e9; }
+    .landing-register > p { margin-bottom: 12px; font-size: 12px; color: #778074; }
+    .landing-register button { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: left; }
+    .landing-register-parent { border: 1px solid #d9e3d1; background: #f2f6ec; color: #3e6034; }
+    .landing-register-parent:hover { background: #e6efd9; }
+    .landing-register-bakery { margin-top: 4px; color: #62755d; }
+    .landing-register-bakery:hover { background: #f4f6f0; }
+    .landing-login-footer { margin-top: 18px; font-size: 10px; line-height: 1.6; color: #788373; text-align: center; }
+    .landing-notice { margin-top: 16px; padding: 12px; border-radius: 10px; background: #f0f4e9; font-size: 12px; line-height: 1.6; }
+    .landing-how { padding: 32px 0 40px; border-top: 1px solid #dfe7df; }
+    .landing-section-heading h2 { margin-top: 8px; font-size: 25px; font-weight: 750; letter-spacing: -.7px; line-height: 1.3; }
+    .landing-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; list-style: none; padding: 0; margin: 28px 0 0; }
+    .landing-steps li { padding: 4px 20px 4px 0; }
+    .landing-step-number { display: inline-block; font-size: 13px; font-weight: 800; color: #8d9b65; border-bottom: 2px solid #dce5c6; padding-bottom: 5px; }
+    .landing-steps h3 { margin: 13px 0 7px; font-size: 16px; font-weight: 750; }
+    .landing-steps p { font-size: 13px; line-height: 1.7; color: #6a796e; }
+    .landing-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 20px 0 28px; border-top: 1px solid #dfe7df; color: #7b8578; font-size: 10px; }
+    .landing-page a:focus-visible, .landing-page button:focus-visible, .landing-page input:focus-visible { outline: 3px solid #94ac74; outline-offset: 3px; }
+    @media (max-width: 899px) {
+      .landing-hero-grid { gap: 28px; grid-template-columns: minmax(0,1fr); padding: 30px 0; }
+      .landing-intro h1 { font-size: clamp(34px,7vw,52px); }
+      .landing-description { max-width: 600px; }
+      .landing-preview { max-width: 540px; }
+      .landing-login { width: 100%; }
+    }
+    @media (max-width: 639px) {
+      .landing-container { padding: 0 20px; }
+      .landing-header { padding: 18px 0; gap: 10px; }
+      .landing-brand { font-size: 19px; gap: 8px; }
+      .landing-brand-icon { width: 37px; height: 37px; font-size: 23px; border-radius: 12px; }
+      .landing-brand-caption { font-size: 9px; }
+      .landing-login-link { padding: 9px 10px; font-size: 11px; gap: 6px; }
+      .landing-eyebrow { font-size: 8px; letter-spacing: 1px; }
+      .landing-intro h1 { margin: 15px 0; letter-spacing: -1.4px; }
+      .landing-description { font-size: 14px; line-height: 1.75; }
+      .landing-benefits { gap: 11px; margin: 20px 0; }
+      .landing-benefits li { font-size: 12px; }
+      .landing-demo-row { gap: 12px; }
+      .landing-demo-button { padding: 13px 16px; gap: 14px; font-size: 13px; }
+      .landing-demo-row p { font-size: 10px; }
+      .landing-preview { margin-top: 24px; padding: 15px; gap: 12px; }
+      .landing-preview-art { flex-basis: 64px; min-height: 60px; }
+      .landing-preview-copy strong { font-size: 13px; }
+      .landing-preview-label { font-size: 7px; }
+      .landing-login { padding: 22px; border-radius: 20px; }
+      .landing-login h2 { font-size: 23px; }
+      .landing-steps { grid-template-columns: minmax(0,1fr); gap: 18px; margin-top: 24px; }
+      .landing-steps li { padding: 0 0 18px; border-bottom: 1px solid #e5eadd; }
+      .landing-steps li:last-child { border: 0; padding-bottom: 0; }
+      .landing-steps h3 { margin-top: 8px; }
+      .landing-section-heading h2 { font-size: 23px; }
+    }
+  `}</style>;
+}
+
 function Icon({ name, className = 'h-4 w-4' }: { name: string; className?: string }) {
   const icons: Record<string, string> = { home: '🏠', utensils: '🥪', basket: '🧺', user: '👧', school: '🏫', check: '✓', plus: '+', chevron: '›', admin: '⚙️', chart: '📊', mail: '✉️', payment: '💳', menu: '🍴', orders: '📋', children: '👨‍👩‍👧‍👦', clock: '⏰', salad: '🥗', euro: '€', bell: '🔔', calendar: '📅', warning: '⚠️' };
   return <span className={`inline-flex items-center justify-center leading-none ${className}`} aria-hidden="true">{icons[name] || '•'}</span>;
@@ -1890,50 +2003,63 @@ export default function PausenappMvpPrototype() {
 
   if (!hasRealSupabaseUser && !isGuestMode) {
     return (
-      <div className="pausen-app min-h-screen bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-3 py-4 text-slate-950 sm:px-6 sm:py-10"><AppLayoutStyles />
-        <div className="mx-auto w-full min-w-0 max-w-5xl">
-          <div className="mb-4 flex min-w-0 items-center justify-between gap-2 sm:mb-10">
-            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-              <span className="text-2xl sm:text-4xl">🥪</span>
-              <div><p className="text-lg font-black sm:text-2xl">Pausenapp</p><p className="text-xs font-medium text-slate-500 sm:text-sm">Einfach. Bestellt.</p></div>
-            </div>
-            <span className="shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-slate-500 sm:px-4 sm:py-2 sm:text-sm shadow-sm ring-1 ring-slate-200">Live-Demo</span>
-          </div>
-
-          <div className="grid grid-cols-1 min-w-0 items-start gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-8">
-            <section className="order-2 min-w-0 rounded-2xl bg-white p-4 shadow-xl shadow-violet-100/60 ring-1 ring-slate-200 sm:rounded-[2rem] sm:p-10 lg:order-1">
-              <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-bold text-violet-700">Für Eltern, Schulen & Bäckereien</span>
-              <h1 className="mt-3 text-xl font-black leading-tight tracking-tight sm:mt-5 sm:text-5xl">Gesunde Schulpausen einfach digital bestellen.</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:mt-5 sm:text-lg">Teste den kompletten Ablauf mit Demo-Daten: Kind auswählen, Produkte bestellen, Zahlung simulieren und die Bäckerei-Produktionsansicht ansehen.</p>
-              <div className="mt-4 flex flex-wrap gap-2 sm:mt-7 sm:gap-3">
-                <Button type="button" onClick={startGuestMode} className="rounded-xl bg-violet-600 px-4 py-3 text-sm sm:rounded-2xl sm:px-6 sm:py-6 sm:text-base font-black text-white hover:bg-violet-700">👤 Demo starten</Button>
-                <span className="flex items-center rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">✓ Keine echten Bestellungen oder Zahlungen</span>
-              </div>
-              <div className="mt-5 hidden gap-3 sm:grid sm:grid-cols-3">
-                <div className="rounded-2xl bg-orange-50 p-4"><p className="font-black">🥪 Bestellen</p><p className="mt-1 text-sm text-slate-600">Produkte nach Kind und Tag auswählen.</p></div>
-                <div className="rounded-2xl bg-blue-50 p-4"><p className="font-black">💳 Zahlung</p><p className="mt-1 text-sm text-slate-600">Überweisung oder PayPal simulieren.</p></div>
-                <div className="rounded-2xl bg-emerald-50 p-4"><p className="font-black">🏫 Bäckerei</p><p className="mt-1 text-sm text-slate-600">Produktionsmengen und Allergien sehen.</p></div>
-              </div>
-            </section>
-
-            <Card className="order-1 min-w-0 rounded-2xl border-0 bg-slate-950 text-white shadow-xl sm:rounded-[2rem] lg:order-2">
-              <CardContent className="p-4 sm:p-7">
-                <p className="text-sm font-bold uppercase tracking-wide text-slate-400">Login</p>
-                <h2 className="mt-2 text-lg font-black leading-snug sm:text-2xl">Eltern, Bäckerei & Verwaltung</h2>
-                <p className="mt-2 text-sm leading-relaxed text-slate-300">Für registrierte Eltern, Bäckereien und die Verwaltung. Interessenten können den Demo-Modus verwenden.</p>
-                <div className="mt-4 space-y-3 sm:mt-6">
-                  <Input type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="E-Mail" className="rounded-xl bg-white text-slate-950" />
-                  <Input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Passwort" className="rounded-xl bg-white text-slate-950" />
-                  <Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="w-full rounded-xl bg-white font-bold !text-slate-950 hover:bg-slate-100 hover:!text-slate-950">{authLoading ? 'Login...' : 'Einloggen'}</Button>
-                  <button type="button" onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-violet-300 transition hover:border-violet-400 hover:bg-slate-900">👨‍👩‍👧 {showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}</button>
-                  <button type="button" onClick={() => { setShowBakeryRegistration((value) => !value); setShowParentRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:border-emerald-400 hover:bg-slate-900">🥐 {showBakeryRegistration ? 'Registrierung schließen' : 'Als Bäckerei registrieren'}</button>
+      <div className="pausen-app landing-page">
+        <AppLayoutStyles />
+        <LandingStyles />
+        <div className="landing-container">
+          <header className="landing-header">
+            <a href="#" className="landing-brand" aria-label="Pausenapp Startseite"><span className="landing-brand-icon" aria-hidden="true"><LandingSnack /></span><span>Pausenapp<span className="landing-brand-caption">Kleine Pause. Einfach geplant.</span></span></a>
+            <a className="landing-login-link" href="#anmelden">Anmelden <span aria-hidden="true">↗</span></a>
+          </header>
+          <main>
+            <div className="landing-hero-grid">
+              <section className="landing-intro" aria-labelledby="landing-title">
+                <p className="landing-eyebrow"><span aria-hidden="true" /> FÜR EINE GUT GEPLANTE SCHULPAUSE</p>
+                <h1 id="landing-title">Die Schuljause.<br /><span>Einfach bestellt.</span></h1>
+                <p className="landing-description">Mit Pausenapp bestellen Eltern die Jause für ihre Kinder bei der teilnehmenden Bäckerei. Online auswählen, im Voraus planen und in der Schule abholen.</p>
+                <ul className="landing-benefits">
+                  <li><span aria-hidden="true">✓</span>Für jedes Kind und jeden Schultag auswählen</li>
+                  <li><span aria-hidden="true">✓</span>Bestellungen und Zahlungen im Blick behalten</li>
+                  <li><span aria-hidden="true">✓</span>Die Bäckerei weiß, was sie vorbereiten soll</li>
+                </ul>
+                <div className="landing-demo-row"><button type="button" onClick={startGuestMode} className="landing-demo-button">Demo ausprobieren <span aria-hidden="true">→</span></button><p>Ohne Registrierung.<br />Keine echten Bestellungen.</p></div>
+                <div className="landing-preview" aria-label="Beispiel einer geplanten Schuljause">
+                  <div className="landing-preview-art" aria-hidden="true"><LandingSnack /></div>
+                  <div className="landing-preview-copy"><span className="landing-preview-label">SO KANN EINE PAUSE AUSSEHEN</span><strong>Eine Jause. Ein guter Start.</strong><span>Pausenbrot & Obst – nach verfügbarem Angebot.</span></div>
+                </div>
+              </section>
+              <section id="anmelden" className="landing-login" aria-labelledby="landing-login-title">
+                <div className="landing-login-symbol" aria-hidden="true">↗</div>
+                <p className="landing-eyebrow">DEIN PAUSENAPP-KONTO</p>
+                <h2 id="landing-login-title">Schön, dass du da bist.</h2>
+                <p className="landing-login-description">Melde dich an und plane die nächste Pause.</p>
+                <form className="landing-form" onSubmit={(event) => { event.preventDefault(); if (!authLoading && loginPassword) void loginWithPassword(); }}>
+                  <div><label htmlFor="landing-email">E-Mail-Adresse</label><Input id="landing-email" type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="name@beispiel.it" required className="landing-input" /></div>
+                  <div><label htmlFor="landing-password">Passwort</label><Input id="landing-password" type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Dein Passwort" required className="landing-input" /></div>
+                  <button type="submit" disabled={authLoading || !loginPassword} className="landing-submit">{authLoading ? 'Anmeldung läuft …' : 'Einloggen'}<span aria-hidden="true">→</span></button>
+                </form>
+                <div className="landing-register">
+                  <p>Noch kein Konto?</p>
+                  <button type="button" aria-expanded={showParentRegistration} onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="landing-register-parent">{showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}<span aria-hidden="true">+</span></button>
+                  <button type="button" aria-expanded={showBakeryRegistration} onClick={() => { setShowBakeryRegistration((value) => !value); setShowParentRegistration(false); }} className="landing-register-bakery">{showBakeryRegistration ? 'Registrierung schließen' : 'Als Bäckerei registrieren'}<span aria-hidden="true">→</span></button>
                 </div>
                 {showParentRegistration && <div className="mt-5 rounded-2xl bg-white p-5 text-slate-950"><div className="mb-4"><p className="text-lg font-black">Elternkonto registrieren</p><p className="mt-1 text-xs text-slate-500">Nach der E-Mail-Bestätigung kannst du dich direkt einloggen, dein Kind anlegen und die Schule auswählen.</p></div><div className="space-y-3"><Input value={parentRegistration.name} onChange={(e) => setParentRegistration((p) => ({ ...p, name: e.target.value }))} placeholder="Vor- und Nachname *" /><Input type="email" value={parentRegistration.email} onChange={(e) => setParentRegistration((p) => ({ ...p, email: e.target.value }))} placeholder="E-Mail *" /><Input type="password" value={parentRegistration.password} onChange={(e) => setParentRegistration((p) => ({ ...p, password: e.target.value }))} placeholder="Passwort *" /></div><Button type="button" onClick={registerParent} disabled={parentRegistrationLoading} className="mt-4 w-full rounded-xl bg-violet-600 font-black text-white hover:bg-violet-700">{parentRegistrationLoading ? 'Registrierung läuft...' : 'Elternkonto erstellen'}</Button>{parentRegistrationNotice && <p className="mt-3 rounded-xl bg-slate-100 p-3 text-xs font-semibold text-slate-700">{parentRegistrationNotice}</p>}</div>}
                 {showBakeryRegistration && <div className="mt-5 rounded-2xl bg-white p-5 text-slate-950"><div className="mb-4"><p className="text-lg font-black">Bäckerei registrieren</p><p className="mt-1 text-xs text-slate-500">Nach der Registrierung wird dein Betrieb von Pausenapp geprüft. Eine Schule kann direkt vorgeschlagen werden.</p></div><div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.name} onChange={(e) => setBakeryRegistration((p) => ({ ...p, name: e.target.value }))} placeholder="Bäckereiname *" /><Input value={bakeryRegistration.legalName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, legalName: e.target.value }))} placeholder="Firmenname" /><Input value={bakeryRegistration.city} onChange={(e) => setBakeryRegistration((p) => ({ ...p, city: e.target.value }))} placeholder="Ort *" /><Input value={bakeryRegistration.address} onChange={(e) => setBakeryRegistration((p) => ({ ...p, address: e.target.value }))} placeholder="Adresse" /><Input value={bakeryRegistration.phone} onChange={(e) => setBakeryRegistration((p) => ({ ...p, phone: e.target.value }))} placeholder="Telefon" /><Input value={bakeryRegistration.vatNumber} onChange={(e) => setBakeryRegistration((p) => ({ ...p, vatNumber: e.target.value }))} placeholder="MwSt.-Nr." /><Input type="email" value={bakeryRegistration.email} onChange={(e) => setBakeryRegistration((p) => ({ ...p, email: e.target.value }))} placeholder="E-Mail *" /><Input type="password" value={bakeryRegistration.password} onChange={(e) => setBakeryRegistration((p) => ({ ...p, password: e.target.value }))} placeholder="Passwort *" /></div><div className="my-5 border-t border-slate-200 pt-5"><p className="font-black">Erste Schule vorschlagen <span className="font-medium text-slate-400">(optional)</span></p><div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.schoolName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolName: e.target.value }))} placeholder="Name der Schule" /><Input value={bakeryRegistration.schoolCity} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolCity: e.target.value }))} placeholder="Ort der Schule" /><Input value={bakeryRegistration.schoolAddress} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolAddress: e.target.value }))} placeholder="Adresse der Schule" className="sm:col-span-2" /></div></div><Button type="button" onClick={registerBakery} disabled={bakeryRegistrationLoading} className="w-full rounded-xl bg-emerald-600 font-black text-white hover:bg-emerald-700">{bakeryRegistrationLoading ? 'Registrierung läuft...' : 'Registrierung absenden'}</Button>{bakeryRegistrationNotice && <p className="mt-3 rounded-xl bg-slate-100 p-3 text-xs font-semibold text-slate-700">{bakeryRegistrationNotice}</p>}</div>}
-                {backendNotice && backendNotice !== 'Supabase verbunden' && <p className="mt-4 text-xs text-slate-400">{backendNotice}</p>}
-              </CardContent>
-            </Card>
-          </div>
+
+                {backendNotice && backendNotice !== 'Supabase verbunden' && backendNotice !== 'Demo-Modus' && <p role="status" className="landing-notice">{backendNotice}</p>}
+                <p className="landing-login-footer">Ein Zugang für Eltern, Bäckerei und Verwaltung.</p>
+              </section>
+            </div>
+            <section className="landing-how" aria-labelledby="landing-how-title">
+              <div className="landing-section-heading"><p className="landing-eyebrow">WENIGE SCHRITTE. GUT ORGANISIERT.</p><h2 id="landing-how-title">So kommt die Jause in die Schule.</h2></div>
+              <ol className="landing-steps">
+                <li><span className="landing-step-number">01</span><h3>Kind & Schule anlegen</h3><p>Registriere dich und wähle die teilnehmende Schule deines Kindes.</p></li>
+                <li><span className="landing-step-number">02</span><h3>Jause auswählen</h3><p>Wähle Produkte und Schultage aus und bestelle vor der angegebenen Frist.</p></li>
+                <li><span className="landing-step-number">03</span><h3>In der Schule abholen</h3><p>Die Bäckerei bereitet die Bestellung vor. Die Ausgabe erfolgt am vereinbarten Ort.</p></li>
+              </ol>
+            </section>
+          </main>
+          <footer className="landing-footer"><span>Pausenapp · Weniger organisieren. Mehr Pause.</span><span>Für Eltern, Schulen & Bäckereien.</span></footer>
         </div>
       </div>
     );
