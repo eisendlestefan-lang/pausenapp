@@ -1779,40 +1779,40 @@ export default function PausenappMvpPrototype() {
 
   if (!hasRealSupabaseUser && !isGuestMode) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-4 py-10 text-slate-950">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-4xl">🥪</span>
-              <div><p className="text-2xl font-black">Pausenapp</p><p className="text-sm font-medium text-slate-500">Einfach. Bestellt.</p></div>
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-3 py-4 text-slate-950 sm:px-6 sm:py-10">
+        <div className="mx-auto w-full min-w-0 max-w-5xl">
+          <div className="mb-4 flex min-w-0 items-center justify-between gap-2 sm:mb-10">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <span className="text-2xl sm:text-4xl">🥪</span>
+              <div><p className="text-lg font-black sm:text-2xl">Pausenapp</p><p className="text-xs font-medium text-slate-500 sm:text-sm">Einfach. Bestellt.</p></div>
             </div>
-            <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm ring-1 ring-slate-200">Live-Demo</span>
+            <span className="shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-slate-500 sm:px-4 sm:py-2 sm:text-sm shadow-sm ring-1 ring-slate-200">Live-Demo</span>
           </div>
 
-          <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <section className="rounded-[2rem] bg-white p-8 shadow-xl shadow-violet-100/60 ring-1 ring-slate-200 sm:p-10">
+          <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
+            <section className="order-2 min-w-0 rounded-2xl bg-white p-4 shadow-xl shadow-violet-100/60 ring-1 ring-slate-200 sm:rounded-[2rem] sm:p-10 lg:order-1">
               <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-bold text-violet-700">Für Eltern, Schulen & Bäckereien</span>
-              <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">Gesunde Schulpausen einfach digital bestellen.</h1>
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">Teste den kompletten Ablauf mit Demo-Daten: Kind auswählen, Produkte bestellen, Zahlung simulieren und die Bäckerei-Produktionsansicht ansehen.</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button type="button" onClick={startGuestMode} className="rounded-2xl bg-violet-600 px-6 py-6 text-base font-black text-white hover:bg-violet-700">👤 Demo starten</Button>
+              <h1 className="mt-3 text-xl font-black leading-tight tracking-tight sm:mt-5 sm:text-5xl">Gesunde Schulpausen einfach digital bestellen.</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:mt-5 sm:text-lg">Teste den kompletten Ablauf mit Demo-Daten: Kind auswählen, Produkte bestellen, Zahlung simulieren und die Bäckerei-Produktionsansicht ansehen.</p>
+              <div className="mt-4 flex flex-wrap gap-2 sm:mt-7 sm:gap-3">
+                <Button type="button" onClick={startGuestMode} className="rounded-xl bg-violet-600 px-4 py-3 text-sm sm:rounded-2xl sm:px-6 sm:py-6 sm:text-base font-black text-white hover:bg-violet-700">👤 Demo starten</Button>
                 <span className="flex items-center rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">✓ Keine echten Bestellungen oder Zahlungen</span>
               </div>
-              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              <div className="mt-5 hidden gap-3 sm:grid sm:grid-cols-3">
                 <div className="rounded-2xl bg-orange-50 p-4"><p className="font-black">🥪 Bestellen</p><p className="mt-1 text-sm text-slate-600">Produkte nach Kind und Tag auswählen.</p></div>
                 <div className="rounded-2xl bg-blue-50 p-4"><p className="font-black">💳 Zahlung</p><p className="mt-1 text-sm text-slate-600">Überweisung oder PayPal simulieren.</p></div>
                 <div className="rounded-2xl bg-emerald-50 p-4"><p className="font-black">🏫 Bäckerei</p><p className="mt-1 text-sm text-slate-600">Produktionsmengen und Allergien sehen.</p></div>
               </div>
             </section>
 
-            <Card className="rounded-[2rem] border-0 bg-slate-950 text-white shadow-xl">
-              <CardContent className="p-7">
+            <Card className="order-1 min-w-0 rounded-2xl border-0 bg-slate-950 text-white shadow-xl sm:rounded-[2rem] lg:order-2">
+              <CardContent className="p-4 sm:p-7">
                 <p className="text-sm font-bold uppercase tracking-wide text-slate-400">Login</p>
-                <h2 className="mt-2 text-2xl font-black">Eltern, Bäckerei & Verwaltung</h2>
+                <h2 className="mt-2 text-lg font-black leading-snug sm:text-2xl">Eltern, Bäckerei & Verwaltung</h2>
                 <p className="mt-2 text-sm leading-relaxed text-slate-300">Für registrierte Eltern, Bäckereien und die Verwaltung. Interessenten können den Demo-Modus verwenden.</p>
-                <div className="mt-6 space-y-3">
-                  <Input value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="E-Mail" className="rounded-xl bg-white text-slate-950" />
-                  <Input type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Passwort" className="rounded-xl bg-white text-slate-950" />
+                <div className="mt-4 space-y-3 sm:mt-6">
+                  <Input type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="E-Mail" className="rounded-xl bg-white text-slate-950" />
+                  <Input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Passwort" className="rounded-xl bg-white text-slate-950" />
                   <Button onClick={loginWithPassword} disabled={authLoading || !loginPassword} className="w-full rounded-xl bg-white font-bold !text-slate-950 hover:bg-slate-100 hover:!text-slate-950">{authLoading ? 'Login...' : 'Einloggen'}</Button>
                   <button type="button" onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-violet-300 transition hover:border-violet-400 hover:bg-slate-900">👨‍👩‍👧 {showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}</button>
                   <button type="button" onClick={() => { setShowBakeryRegistration((value) => !value); setShowParentRegistration(false); }} className="w-full rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:border-emerald-400 hover:bg-slate-900">🥐 {showBakeryRegistration ? 'Registrierung schließen' : 'Als Bäckerei registrieren'}</button>
