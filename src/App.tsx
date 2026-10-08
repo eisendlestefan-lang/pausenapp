@@ -397,7 +397,43 @@ function ParentHome({ children, orders, completedOrders, onNavigate, onSelectChi
     onNavigate('bestellen');
   }
 
-  return <div className="space-y-7"><div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"><div><h2 className="text-3xl font-black tracking-tight text-slate-950 md:text-4xl">Guten Morgen, {currentUser.name}! 👋</h2><p className="mt-2 text-lg text-slate-500">Schön, dass du da bist. Hier ist dein Überblick für heute.</p></div><div className="flex gap-3"><div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200"><Icon name="calendar" /> {new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}</div><button className="relative rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200"><Icon name="bell" className="h-5 w-5" />{openPayments.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">{openPayments.length}</span>}</button></div></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4"><StatCard label="Offene Bestellungen" value={openPayments.length} hint="Zahlungen oder Prüfung offen" icon="basket" tone="violet" /><StatCard label="Bezahlt" value={paidOrders.length} hint="bereits bestätigt" icon="check" tone="emerald" /><StatCard label="Bestellfrist endet" value={nextDayOpen ? nextDay : 'Fixiert'} hint={deadlineText} icon="clock" tone="orange" /><StatCard label="Offener Betrag" value={money(openTotal)} hint={`${openPayments.length} offene Bestellung(en)`} icon="euro" tone="blue" /></div><Card className="rounded-[2rem] border-0 bg-white/90 shadow-sm ring-1 ring-slate-200"><CardContent className="p-6"><h3 className="text-2xl font-black tracking-tight">Schnellzugriff</h3><div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-6"><QuickActionCard icon="basket" title="Neue Bestellung" desc="Für deine Kinder bestellen" tone="orange" onClick={goToOrder} /><QuickActionCard icon="children" title="Kinder verwalten" desc="Kinder hinzufügen oder bearbeiten" tone="yellow" onClick={() => onNavigate('kinder')} /><QuickActionCard icon="payment" title="Zahlungen prüfen" desc="Zahlungsstatus einsehen" tone="blue" onClick={() => onNavigate('zahlung')} /><QuickActionCard icon="chart" title="Statistiken" desc="Übersichten und Auswertungen" tone="violet" onClick={() => onNavigate('statistiken')} />{(currentUser.role === 'admin' || isGuestMode) && <QuickActionCard icon="school" title="Ausgabe / Bäckerei" desc="Produktionsliste anzeigen" tone="emerald" onClick={() => onNavigate('schule')} />}{currentUser.role === 'admin' && !isGuestMode && <QuickActionCard icon="admin" title="Adminbereich" desc="Verwaltung und Einstellungen" tone="slate" onClick={() => onNavigate('admin')} />}</div></CardContent></Card><div className="rounded-[1.75rem] border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-5 shadow-sm"><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div className="flex items-start gap-4"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-400 text-xl shadow-sm"><Icon name="warning" /></span><div><p className="text-lg font-black text-slate-950">{reminderMessage}</p><p className="mt-1 text-sm text-slate-600">Bitte rechtzeitig bestellen, damit wir alles gut planen können.</p></div></div><Button onClick={goToOrder} className="rounded-2xl bg-yellow-400 px-6 py-6 font-black text-slate-950 hover:bg-yellow-500">Jetzt bestellen <Icon name="chevron" className="ml-2" /></Button></div></div></div>;
+  return (
+    <div className="parent-home-v7 min-w-0 space-y-4 sm:space-y-6">
+      <section className="min-w-0 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-emerald-100 sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Deine Pausenapp</p>
+        <h2 className="mt-1 break-words text-xl font-extrabold leading-tight text-slate-950 sm:text-3xl">Hallo, {currentUser.name}! 👋</h2>
+        <p className="mt-2 text-sm text-slate-600">Bestelle die Schuljause für deine Kinder.</p>
+        <Button onClick={goToOrder} className="mt-4 w-full rounded-xl bg-emerald-600 py-3 font-bold text-white hover:bg-emerald-700 sm:w-auto">🥪 Jetzt bestellen</Button>
+      </section>
+      <section className="grid min-w-0 grid-cols-2 gap-3" aria-label="Bestellübersicht">
+        <div className="min-w-0 rounded-2xl bg-amber-50 p-3 ring-1 ring-amber-100">
+          <p className="text-xs font-semibold text-amber-900">Offene Zahlungen</p>
+          <p className="mt-1 text-2xl font-extrabold text-slate-950">{openPayments.length}</p>
+          <p className="mt-1 break-words text-xs text-slate-600">{money(openTotal)} offen</p>
+        </div>
+        <div className="min-w-0 rounded-2xl bg-emerald-50 p-3 ring-1 ring-emerald-100">
+          <p className="text-xs font-semibold text-emerald-900">Bezahlt</p>
+          <p className="mt-1 text-2xl font-extrabold text-slate-950">{paidOrders.length}</p>
+          <p className="mt-1 text-xs text-slate-600">Bestellungen</p>
+        </div>
+      </section>
+      <section className="min-w-0 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <p className="text-sm font-bold text-slate-900">⏰ Nächste Bestellfrist</p>
+        <p className="mt-1 break-words text-sm text-slate-600">{deadlineText}</p>
+        <p className="mt-2 break-words text-xs text-slate-500">{reminderMessage}</p>
+      </section>
+      <section className="min-w-0 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <h3 className="text-base font-bold text-slate-950">Schnellzugriff</h3>
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <button onClick={() => onNavigate('kinder')} className="min-w-0 rounded-xl bg-slate-50 p-3 text-left text-sm font-semibold text-slate-800 ring-1 ring-slate-100">👧 Kinder</button>
+          <button onClick={() => onNavigate('zahlung')} className="min-w-0 rounded-xl bg-slate-50 p-3 text-left text-sm font-semibold text-slate-800 ring-1 ring-slate-100">💳 Zahlungen</button>
+          <button onClick={() => onNavigate('statistiken')} className="min-w-0 rounded-xl bg-slate-50 p-3 text-left text-sm font-semibold text-slate-800 ring-1 ring-slate-100">📊 Statistiken</button>
+          {(currentUser.role === 'admin' || isGuestMode) && <button onClick={() => onNavigate('schule')} className="min-w-0 rounded-xl bg-slate-50 p-3 text-left text-sm font-semibold text-slate-800 ring-1 ring-slate-100">🏫 Bäckerei</button>}
+          {currentUser.role === 'admin' && !isGuestMode && <button onClick={() => onNavigate('admin')} className="min-w-0 rounded-xl bg-slate-50 p-3 text-left text-sm font-semibold text-slate-800 ring-1 ring-slate-100">⚙️ Admin</button>}
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export default function PausenappMvpPrototype() {
@@ -1937,6 +1973,14 @@ export default function PausenappMvpPrototype() {
   .parent-mobile-view [role="button"] .min-w-8 { min-width: 2rem; }
 }
 
+
+/* V7: only the parent home gets a deliberately designed two-column summary. */
+@media screen and (max-width: 639px) {
+  .parent-mobile-view .parent-home-v7 { width: 100%; min-width: 0; max-width: 100%; }
+  .parent-mobile-view .parent-home-v7 .grid.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .parent-mobile-view .parent-home-v7 button { white-space: normal; overflow-wrap: break-word; }
+  .parent-mobile-view .parent-home-v7 h2 { font-size: 1.25rem !important; line-height: 1.3 !important; }
+}
 
 /* V6: Eltern - tatsächliche mobile Breite, kompakte Kennzahlen und Zahlung. */
 @media screen and (max-width: 639px) {
