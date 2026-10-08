@@ -1870,6 +1870,32 @@ export default function PausenappMvpPrototype() {
   .bakery-print-root .grid.xl\:grid-cols-6 > button > div:last-child { display: none; }
 }
 
+/* Mobile bakery layout V3: contain long content within the viewport */
+@media screen and (max-width: 639px) {
+  html, body, #root { width: 100%; max-width: 100%; margin: 0; }
+  #root { overflow-x: clip; }
+  .bakery-print-root { width: 100% !important; max-width: 100% !important; min-width: 0 !important; overflow: hidden; }
+  .bakery-print-root main, .bakery-print-root section, .bakery-print-root article,
+  .bakery-print-root .grid, .bakery-print-root .flex,
+  .bakery-print-root [class*="rounded-"] { min-width: 0; max-width: 100%; }
+  .bakery-print-root .flex { flex-wrap: wrap; }
+  .bakery-print-root .grid { grid-template-columns: minmax(0, 1fr); }
+  .bakery-print-root .bakery-stats { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .bakery-print-root .bakery-stats > * { min-width: 0; padding: 0 !important; }
+  .bakery-print-root .bakery-stats p { font-size: 12px !important; line-height: 1.3 !important; }
+  .bakery-print-root .bakery-stats .text-3xl, .bakery-print-root .bakery-stats .text-4xl { font-size: 1.4rem !important; }
+  .bakery-print-root .bakery-print-header { padding: 12px !important; }
+  .bakery-print-root .bakery-print-header h1 { font-size: 1.15rem !important; line-height: 1.25 !important; }
+  .bakery-print-root .bakery-print-header .text-4xl, .bakery-print-root .bakery-print-header .text-3xl { font-size: 1.15rem !important; }
+  .bakery-print-root .bakery-print-header button { font-size: 12px !important; min-width: 0; padding: 8px !important; }
+  .bakery-print-root .bakery-print-header .flex { gap: 6px !important; }
+  .bakery-print-root input { width: 100%; min-width: 0; }
+  .bakery-print-root .overflow-x-auto { width: 100%; max-width: 100%; overflow-x: auto !important; }
+  .bakery-print-root .overflow-x-auto table { max-width: none; }
+  .bakery-print-root button { min-height: 38px; }
+  .bakery-print-root h1, .bakery-print-root h2, .bakery-print-root h3,
+  .bakery-print-root p, .bakery-print-root span { overflow-wrap: anywhere; }
+}
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
   html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
