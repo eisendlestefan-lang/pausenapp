@@ -1004,7 +1004,19 @@ export default function PausenappMvpPrototype() {
       if (!supabase) return;
       setDataLoading(true);
       try {
+        // Ohne gespeicherte Sitzung ist die Anmeldeseite der normale Startzustand.
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!sessionData?.session) {
+          setBackendNotice('');
+          return;
+        }
         const { data: authData, error: authError } = await supabase.auth.getUser();
+        // Die Sitzung kann zwischen den beiden Aufrufen abgemeldet worden sein.
+        if (authError?.name === 'AuthSessionMissingError') {
+          setBackendNotice('');
+          return;
+        }
         if (authError) throw authError;
         let loadedUser: any = null;
         if (authData?.user) {
