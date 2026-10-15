@@ -1177,6 +1177,30 @@ export default function PausenappMvpPrototype() {
     loadSupabaseData();
   }, []);
 
+  // Nach interaktiver Anmeldung und geänderter Schulzuordnung das echte Angebot laden.
+  const parentProductScope = children.map(child => `${child.id}:${child.schoolId || ''}`).sort().join('|');
+  useEffect(() => {
+    if (!supabase || !functionNeedsRealUser(user) || user.role === 'bakery' || isGuestMode) return;
+    let stopped = false;
+    async function refreshParentProducts() {
+      try {
+        const { data, error } = await supabase!.from('products')
+          .select('id, name, description, price, tags, active, bakery_id')
+          .eq('active', true).order('name');
+        if (stopped) return;
+        if (error) throw error;
+        setMenuProducts((data || []).map(normalizeProduct));
+      } catch (error) {
+        if (!stopped) {
+          setMenuProducts([]);
+          setBackendNotice(`Produkte konnten nicht geladen werden: ${getNetworkErrorMessage(error)}`);
+        }
+      }
+    }
+    void refreshParentProducts();
+    return () => { stopped = true; };
+  }, [user?.id, user?.role, isGuestMode, parentProductScope]);
+
   async function loadPaymentSettingsForSchools(schools: SchoolOption[]) {
     if (!supabase) return;
     const bakeryIds = Array.from(new Set(schools.map((school) => school.bakeryId).filter(Boolean)));
