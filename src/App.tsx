@@ -1018,6 +1018,8 @@ export default function PausenappMvpPrototype() {
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [confirmationResending, setConfirmationResending] = useState(false);
+  const [confirmationResendNotice, setConfirmationResendNotice] = useState('');
   const [showParentRegistration, setShowParentRegistration] = useState(false);
   const [parentRegistration, setParentRegistration] = useState({ name: '', email: '', password: '' });
   const [parentRegistrationNotice, setParentRegistrationNotice] = useState('');
@@ -1435,6 +1437,28 @@ export default function PausenappMvpPrototype() {
       p_full_name: meta.full_name || authUser.email || 'Elternkonto'
     });
     if (error) throw error;
+  }
+
+  async function resendSignupConfirmation() {
+    if (!supabase || confirmationResending) return;
+    const email = loginEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setConfirmationResendNotice('Bitte oben eine gültige E-Mail-Adresse eingeben. Ein Passwort ist für den erneuten Versand nicht nötig.');
+      return;
+    }
+    setConfirmationResending(true);
+    setConfirmationResendNotice('');
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup', email, options: { emailRedirectTo: window.location.origin }
+      });
+      if (error) throw error;
+      setConfirmationResendNotice('Falls für diese Adresse eine unbestätigte Registrierung vorliegt, wurde eine neue Bestätigungsmail angefordert. Bitte auch den Spam-Ordner prüfen und den neuesten Link verwenden.');
+    } catch (error: any) {
+      setConfirmationResendNotice(error?.status === 429
+        ? 'Bitte kurz warten. Es wurden zu viele E-Mails angefordert. Versuche es später erneut.'
+        : `Bestätigung konnte nicht angefordert werden: ${getNetworkErrorMessage(error)}`);
+    } finally { setConfirmationResending(false); }
   }
 
   async function registerParent() {
@@ -2655,6 +2679,11 @@ export default function PausenappMvpPrototype() {
                   <div><label htmlFor="landing-password">Passwort</label><Input id="landing-password" type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Dein Passwort" required className="landing-input" /></div>
                   <button type="submit" disabled={authLoading || !loginPassword} className="landing-submit">{authLoading ? 'Anmeldung läuft …' : 'Einloggen'}<span aria-hidden="true">→</span></button>
                 </form>
+                <div className="mt-4 text-sm text-slate-600">
+                  <p>Keine Bestätigungsmail erhalten?</p>
+                  <button type="button" disabled={confirmationResending || authLoading} onClick={resendSignupConfirmation} className="mt-1 rounded-lg py-2 text-left font-semibold text-emerald-800 underline underline-offset-4 disabled:opacity-50">{confirmationResending ? 'Wird angefordert …' : 'Bestätigung erneut senden'}</button>
+                  {confirmationResendNotice && <p role="status" className="mt-2 rounded-xl bg-slate-50 p-3 text-sm">{confirmationResendNotice}</p>}
+                </div>
                 <div className="landing-register">
                   <p>Noch kein Konto?</p>
                   <button type="button" aria-expanded={showParentRegistration} onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="landing-register-parent"><span className="landing-register-copy"><span>{showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}</span><small>Elternkonto erstellen und die Schuljause bestellen.</small></span><span aria-hidden="true">{showParentRegistration ? '−' : '→'}</span></button>
