@@ -880,18 +880,34 @@ function LandingStyles() {
     .landing-preview-label { color: #857448; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
     .landing-preview-copy strong { font-size: 15px; line-height: 1.4; }
     .landing-preview-copy > span:last-child { font-size: 11px; color: #797a62; line-height: 1.5; }
-    .landing-login { scroll-margin-top: 20px; border-radius: 24px; padding: 30px; background: #fff; border: 1px solid #dfe7dc; box-shadow: 0 15px 45px #1d39220a; }
-    .landing-login-symbol { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 20px; border-radius: 13px; background: #edf2e7; color: #507044; font-size: 24px; }
+    .landing-login { scroll-margin-top: 20px; border-radius: 24px; padding: 30px; background: #fff; border: 1px solid #dfe7dc; border-top:4px solid #527c5b; box-shadow: 0 18px 50px #1d392212; }
+    .landing-login-intro { margin-bottom:24px; }
+    .landing-login-kicker { display:flex;align-items:center;gap:8px;color:#48705a;font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:14px; }
+    .landing-login-kicker svg { width:16px;height:16px; }
+    .landing-google { display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;padding:12px 18px;border:1px solid #cdd8d0;border-radius:12px;background:white;color:#29362e;font-size:15px;font-weight:600;box-shadow:0 2px 3px #213b2610;transition:background .15s,border-color .15s; }
+    .landing-google:hover { background:#f6f9f6;border-color:#8da795; }
+    .landing-google:disabled { opacity:.55;cursor:wait; }
+    .landing-google svg { width:20px;height:20px;flex:none; }
+    .landing-google-note { margin:10px 0 0;text-align:center;color:#788078;font-size:11px;line-height:1.5; }
+    .landing-divider { display:flex;align-items:center;gap:14px;margin:24px 0;color:#8a948b;font-size:11px; }
+    .landing-divider::before,.landing-divider::after { content:'';height:1px;background:#e5eae4;flex:1; }
+    .landing-help { margin-top:16px;font-size:12px;color:#6b796e; }
+    .landing-help summary { cursor:pointer;padding:4px 0; }
+    .landing-help button { margin-top:8px;border:0;background:none;color:#24533d;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:6px 0; }
+    .landing-help button:disabled { opacity:.5; }
+    .landing-help-notice { margin-top:10px;background:#f1f5ef;border-radius:10px;padding:12px;line-height:1.6; }
+    .landing-login button:focus-visible,.landing-help summary:focus-visible { outline:3px solid #7caa90;outline-offset:3px; }
+    .landing-page .landing-input:focus { outline:2px solid #7caa90;outline-offset:1px;border-color:#7caa90; }
     .landing-login h2 { margin-top: 8px; font-size: 25px; font-weight: 800; letter-spacing: -.8px; line-height: 1.25; }
-    .landing-login-description { margin: 10px 0 24px; color: #6b796e; font-size: 13px; line-height: 1.65; }
+    .landing-login-description { margin: 10px 0 0; color: #6b796e; font-size: 13px; line-height: 1.65; }
     .landing-form { display: grid; gap: 17px; }
     .landing-form label { display: block; margin-bottom: 7px; font-size: 12px; font-weight: 700; }
     .landing-page .landing-input { width: 100%; height: 46px; padding: 10px 13px; border: 1px solid #d9e2d7; border-radius: 10px; background: #fbfcf9; color: #203e35; font-size: 16px; }
     .landing-input::placeholder { color: #929b92; }
-    .landing-submit { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 13px 17px; background: #214d3b; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 750; }
+    .landing-submit { display: flex; gap:12px; min-height:50px; justify-content: center; align-items: center; width: 100%; padding: 13px 17px; background: #214d3b; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 750; }
     .landing-submit:disabled { opacity: .55; cursor: not-allowed; }
     .landing-register { margin-top: 24px; padding-top: 20px; border-top: 1px solid #edf0e9; }
-    .landing-register > p { margin-bottom: 12px; font-size: 12px; color: #778074; }
+    .landing-register > p { margin-bottom:14px;font-size:11px;letter-spacing:.8px;font-weight:700;text-transform:uppercase;color:#778074; }
     .landing-register button { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 18px 20px; min-height: 82px; border-radius: 14px; font-size: 16px; line-height: 1.35; font-weight: 700; text-align: left; }
     .landing-register-parent { border: 1px solid #d9e3d1; background: #f2f6ec; color: #3e6034; }
     .landing-register-parent:hover { background: #e6efd9; }
@@ -2816,23 +2832,21 @@ function PausenappApplication() {
                 </div>
               </section>
               <section id="anmelden" className="landing-login" aria-labelledby="landing-login-title">
-                <div className="landing-login-symbol" aria-hidden="true">↗</div>
-                <p className="landing-eyebrow">DEIN PAUSENAPP-KONTO</p>
-                <h2 id="landing-login-title">Schön, dass du da bist.</h2>
-                <p className="landing-login-description">Melde dich an und plane die nächste Pause.</p>
-                <button type="button" onClick={loginWithGoogle} disabled={authLoading} className="mt-5 flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50">Mit Google anmelden</button>
-                <p className="mt-2 text-center text-xs text-slate-500">Neu hier? Dabei wird dein Elternkonto erstellt.</p>
-                <p className="my-4 text-center text-xs text-slate-400">oder mit E-Mail</p>
+                <div className="landing-login-intro"><p className="landing-login-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M5 21v-2a7 7 0 0 1 14 0v2" /></svg>Dein Pausenapp-Konto</p>
+                <h2 id="landing-login-title">Willkommen bei Pausenapp.</h2>
+                <p className="landing-login-description">Einloggen. Jause planen. Entspannt in den Tag.</p></div>
+                <button type="button" onClick={loginWithGoogle} disabled={authLoading} className="landing-google"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65Z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.78-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19Z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg><span>Mit Google anmelden</span></button>
+                <p className="landing-google-note">Für neue Eltern und bestehende Konten.</p>
+                <div className="landing-divider"><span>oder mit E-Mail</span></div>
                 <form className="landing-form" onSubmit={(event) => { event.preventDefault(); if (!authLoading && loginPassword) void loginWithPassword(); }}>
                   <div><label htmlFor="landing-email">E-Mail-Adresse</label><Input id="landing-email" type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="name@beispiel.it" required className="landing-input" /></div>
                   <div><label htmlFor="landing-password">Passwort</label><Input id="landing-password" type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Dein Passwort" required className="landing-input" /></div>
                   <button type="submit" disabled={authLoading || !loginPassword} className="landing-submit">{authLoading ? 'Anmeldung läuft …' : 'Einloggen'}<span aria-hidden="true">→</span></button>
                 </form>
-                <div className="mt-4 text-sm text-slate-600">
-                  <p>Keine Bestätigungsmail erhalten?</p>
-                  <button type="button" disabled={confirmationResending || authLoading} onClick={resendSignupConfirmation} className="mt-1 rounded-lg py-2 text-left font-semibold text-emerald-800 underline underline-offset-4 disabled:opacity-50">{confirmationResending ? 'Wird angefordert …' : 'Bestätigung erneut senden'}</button>
-                  {confirmationResendNotice && <p role="status" className="mt-2 rounded-xl bg-slate-50 p-3 text-sm">{confirmationResendNotice}</p>}
-                </div>
+                <details className="landing-help"><summary>Keine Bestätigungsmail erhalten?</summary>
+                  <button type="button" disabled={confirmationResending || authLoading} onClick={resendSignupConfirmation}>{confirmationResending ? 'Wird angefordert …' : 'Bestätigung erneut senden'}</button>
+                  {confirmationResendNotice && <p role="status" className="landing-help-notice">{confirmationResendNotice}</p>}
+                </details>
                 <div className="landing-register">
                   <p>Noch kein Konto?</p>
                   <button type="button" aria-expanded={showParentRegistration} onClick={() => { setShowParentRegistration((value) => !value); setShowBakeryRegistration(false); }} className="landing-register-parent"><span className="landing-register-copy"><span>{showParentRegistration ? 'Registrierung schließen' : 'Als Elternteil registrieren'}</span><small>Elternkonto erstellen und die Schuljause bestellen.</small></span><span aria-hidden="true">{showParentRegistration ? '−' : '→'}</span></button>
