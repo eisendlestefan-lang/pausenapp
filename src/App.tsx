@@ -1028,7 +1028,72 @@ function ParentHome({ children, orders, completedOrders, onNavigate, onSelectChi
   );
 }
 
+function PrivacyPage() {
+  useEffect(() => { document.title = 'Datenschutz | Pausenapp'; }, []);
+  return <div className="privacy-page">
+    <style>{`
+      .privacy-page{min-height:100vh;background:#f5f7f6;color:#203b32;font-family:Arial,sans-serif;padding:24px 16px 48px;line-height:1.7}
+      .privacy-page *{box-sizing:border-box}.privacy-page main{max-width:860px;margin:auto;background:white;border:1px solid #e0e7e2;border-radius:20px;padding:clamp(22px,5vw,54px)}
+      .privacy-page nav{max-width:860px;margin:0 auto 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.privacy-page a{color:#17684d;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+      .privacy-page h1{font-size:clamp(30px,6vw,42px);line-height:1.2;margin:8px 0 20px}.privacy-page h2{font-size:21px;line-height:1.4;margin:32px 0 10px}.privacy-page p{margin:10px 0}.privacy-page ul{padding-left:22px;list-style:disc}.privacy-page li{margin:8px 0}
+      .privacy-page address{font-style:normal}.privacy-page .privacy-note{padding:16px;border-radius:12px;background:#edf5ef}.privacy-page .privacy-small{font-size:13px;color:#617169}.privacy-page a:focus-visible{outline:3px solid #328367;outline-offset:4px}
+      @media print{.privacy-page{padding:0;background:white}.privacy-page main{border:0;padding:0}.privacy-page nav{display:none}.privacy-page h2{break-after:avoid}}
+    `}</style>
+    <nav aria-label="Seitennavigation"><strong>Pausenapp</strong><a href="/">Zur Startseite</a></nav>
+    <main><p className="privacy-small">Stand: 15. Oktober 2026 · Entwurf zur Prüfung</p><h1>Datenschutzerklärung</h1>
+      <p>Diese Informationen beschreiben die Verarbeitung personenbezogener Daten bei der Nutzung von pausen.app. Eltern können Kinderprofile verwalten und Schuljausen bei teilnehmenden Bäckereien bestellen. Die App richtet sich an Erwachsene; Kinder benötigen kein eigenes Benutzerkonto.</p>
+      <h2>1. Verantwortlicher und Kontakt</h2>
+      <address><strong>Eisendle Stefan · Einzelfirma</strong><br />Am Moosfeld 7/A – Campo Palú 7/A<br />39049 Pfitsch / Val di Vizze (BZ), Italien<br />E-Mail: <a href="mailto:eisendlestefan@gmail.com">eisendlestefan@gmail.com</a></address>
+      <p className="privacy-small">MwSt.-Nr. / Partita IVA: 02737990214<br />Steuernummer / Codice fiscale: SNDSFN80P10M067G</p>
+      <h2>2. Welche Daten wir für welchen Zweck verwenden</h2>
+      <ul>
+        <li><strong>Aufruf der Website:</strong> Technische Verbindungsdaten wie IP-Adresse, aufgerufene Adresse, Zeitpunkt sowie Browser- und Geräteinformationen dienen der Bereitstellung, Fehleranalyse und Sicherheit.</li>
+        <li><strong>Benutzerkonto:</strong> Name, E-Mail-Adresse, Benutzerkennung, Anmeldedaten und Kontorolle dienen der Registrierung, Anmeldung und Zuordnung von Bestellungen. Bei Anmeldung mit Passwort wird dieses durch den Authentifizierungsdienst verarbeitet.</li>
+        <li><strong>Kinderprofile:</strong> Die von Eltern angegebenen Namen, Schulen und Klassen dienen der Zuordnung, Vorbereitung und Ausgabe der bestellten Waren.</li>
+        <li><strong>Bestellungen:</strong> Artikel, Mengen, Preise, Liefer- oder Abholtag und -ort, Zahlungsart, Zahlungsreferenz, Zahlungsstatus, Änderungen, Stornierungen und Ausgabestatus werden zur Bestellabwicklung und Nachverfolgung verarbeitet.</li>
+        <li><strong>Bäckereikonten:</strong> Betriebs- und Kontaktdaten, Freigabestatus, Schulzuordnungen, Sortiment sowie Zahlungs- und Abhol-/Liefereinstellungen dienen der Zusammenarbeit mit dem jeweiligen Betrieb.</li>
+        <li><strong>Nachrichten:</strong> Konto- und Bestellnachrichten sowie Versand- und Fehlerstatus dienen der Kommunikation über Registrierung, Bestellungen, Änderungen, Stornierungen und Zahlungen. Bei Kontakt per E-Mail verarbeiten wir die Nachricht und deine Kontaktdaten zur Bearbeitung der Anfrage.</li>
+      </ul>
+      <h2>3. Rechtsgrundlagen und erforderliche Angaben</h2>
+      <p>Kontoführung und die Abwicklung deiner Bestellungen beruhen auf Art. 6 Abs. 1 Buchst. b DSGVO. Technischer Betrieb, Missbrauchsschutz und die notwendige Zuordnung der von Eltern angegebenen Kinderdaten beruhen auf Art. 6 Abs. 1 Buchst. f DSGVO; unsere Interessen sind ein sicherer Dienst und die richtige Vorbereitung und Ausgabe der bestellten Waren. Gesetzlich vorgeschriebene Verarbeitung beruht auf Art. 6 Abs. 1 Buchst. c DSGVO.</p>
+      <p>Ohne die für Anmeldung und Bestellung benötigten Angaben können wir diese Funktionen nicht bereitstellen. Angaben zu Kindern sollen nur durch ihre Sorgeberechtigten oder entsprechend befugte Personen erfolgen.</p>
+      <h2>4. Allergieangaben</h2>
+      <p>Allergieangaben sind Gesundheitsdaten. Die App kann solche Angaben im Kinderprofil, in Bestellinformationen, E-Mails und Produktionslisten verarbeiten und der zuständigen Bäckerei anzeigen. Bitte beschränke Angaben auf das für die Bestellung Erforderliche.</p>
+      <p>Für diese besondere Datenverarbeitung ist eine gesonderte ausdrückliche Einwilligung der hierzu berechtigten Person nach Art. 9 Abs. 2 Buchst. a und Art. 6 Abs. 1 Buchst. a DSGVO erforderlich. Eine solche Einwilligung kann mit Wirkung für die Zukunft über die oben genannte E-Mail-Adresse widerrufen werden. Der Widerruf berührt nicht die Rechtmäßigkeit der bisherigen Verarbeitung.</p>
+      <h2>5. Wer Daten erhält</h2>
+      <p>Die zuständige Bäckerei erhält die für die Bearbeitung erforderlichen Bestell-, Kontakt- und Kinderdaten sowie gegebenenfalls Allergiehinweise. Sie kann Produktions- und Ausgabelisten ausdrucken. Für ihre eigene Herstellung, Ausgabe, Zahlungsabwicklung und gesetzliche Dokumentation ist die Bäckerei eigenständig verantwortlich. Die bloße Auswahl einer Schule bedeutet nicht, dass diese einen Zugang zu den Daten erhält.</p>
+      <p>Der Betreiber kann Daten zur Verwaltung und Unterstützung einsehen. Technische Dienstleister verarbeiten Daten zur Bereitstellung ihrer jeweiligen Funktionen:</p>
+      <ul>
+        <li><strong>Vercel:</strong> Bereitstellung und Auslieferung der Website, einschließlich technischer Verbindungs- und Protokolldaten. <a href="https://vercel.com/legal/privacy-notice">Datenschutzhinweise</a> · <a href="https://vercel.com/legal/dpa">Auftragsverarbeitung</a>.</li>
+        <li><strong>Supabase:</strong> Datenbank, Benutzeranmeldung und serverseitige Funktionen. Hier werden Konto-, Kinder- und Bestelldaten verarbeitet. <a href="https://supabase.com/privacy">Datenschutzhinweise</a> · <a href="https://supabase.com/legal/customer-resources/data-processing-addendum">Auftragsverarbeitung</a>.</li>
+        <li><strong>Resend (Plus Five Five, Inc.):</strong> Versand von Konto- und Bestell-E-Mails. Verarbeitet werden Empfängeradresse, Nachrichteninhalt und Zustellinformationen. Bestellnachrichten können Kinder- und Allergieangaben enthalten. <a href="https://resend.com/legal/privacy-policy">Datenschutzhinweise</a> · <a href="https://resend.com/legal/dpa">Auftragsverarbeitung</a>.</li>
+      </ul>
+      <h2>6. Freiwillige Anmeldung mit Google</h2>
+      <p>Alternativ zur Anmeldung mit E-Mail und Passwort kannst du Google verwenden. Nach deiner Freigabe werden die für die Anmeldung bereitgestellten Profilinformationen, insbesondere Name, E-Mail-Adresse und Google-Kennung, über Supabase zur Anmeldung oder Erstellung deines Kontos verwendet. Google kann außerdem ein Profilbild bereitstellen. Pausenapp erhält dabei weder dein Google-Passwort noch Zugriff auf dein Gmail-Postfach oder deine Kontakte.</p>
+      <p>Google erfährt, dass du dich bei diesem Dienst anmeldest. Für die Verarbeitung durch Google gelten die <a href="https://policies.google.com/privacy?hl=de">Datenschutzhinweise von Google</a>. Die Nutzung von Google ist freiwillig; die Anmeldung mit E-Mail und Passwort bleibt möglich.</p>
+      <h2>7. Verarbeitung außerhalb des Europäischen Wirtschaftsraums</h2>
+      <p>Bei den genannten internationalen Dienstleistern kann eine Verarbeitung außerhalb des Europäischen Wirtschaftsraums, insbesondere in den USA, stattfinden. Die verlinkten Vereinbarungen erläutern die jeweiligen Empfänger, Unterauftragnehmer und vorgesehenen Garantien, etwa EU-Standardvertragsklauseln oder anwendbare Angemessenheitsbeschlüsse. Informationen zu den für Pausenapp tatsächlich eingesetzten Garantien und Kopien können beim Verantwortlichen angefragt werden.</p>
+      <h2>8. Speicherung im Browser</h2>
+      <p>Zur Aufrechterhaltung der Anmeldung werden Sitzungsinformationen im Browser gespeichert, insbesondere über den lokalen Browserspeicher. Diese Speicherung dient dem angemeldeten Betrieb. Abmelden beendet die Sitzung; das Löschen der Browserdaten kann eine erneute Anmeldung erforderlich machen.</p>
+      <h2>9. Wie lange Daten gespeichert werden</h2>
+      <p>Die Speicherdauer richtet sich nach dem jeweiligen Zweck: Kontodaten werden für die Bereitstellung des Kontos benötigt, Kinderprofile für dessen Nutzung und Bestelldaten für Abwicklung, Zahlungszuordnung und die Bearbeitung möglicher Rückfragen oder Ansprüche. Gesetzliche Aufbewahrungspflichten können eine weitere Speicherung bestimmter Belege erfordern. Nicht mehr erforderliche Daten sind zu löschen oder zu anonymisieren.</p>
+      <p>Eine Löschung kann über den Datenschutzkontakt beantragt werden. Das Entfernen eines Kinderprofils entfernt nicht automatisch Angaben aus bereits gespeicherten Bestellungen, versendeten E-Mails oder ausgedruckten Listen. Solche Daten müssen bei einer Löschanfrage gesondert geprüft werden. Technische Protokolle und Sicherungen unterliegen den jeweiligen Einstellungen und Aufbewahrungszyklen der Dienstleister.</p>
+      <h2>10. Deine Rechte</h2>
+      <p>Nach Maßgabe der gesetzlichen Voraussetzungen hast du Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit. Einer auf berechtigte Interessen gestützten Verarbeitung kannst du aus Gründen deiner besonderen Situation widersprechen. Einwilligungen kannst du jederzeit für die Zukunft widerrufen.</p>
+      <p>Wende dich dazu an <a href="mailto:eisendlestefan@gmail.com">eisendlestefan@gmail.com</a>. Du kannst dich auch bei einer zuständigen Datenschutzaufsichtsbehörde beschweren, insbesondere beim italienischen <a href="https://www.garanteprivacy.it/diritti/come-agire-per-tutelare-i-tuoi-dati-personali/reclamo">Garante per la protezione dei dati personali</a>.</p>
+      <h2>11. Automatisierte Entscheidungen und Änderungen</h2>
+      <p>Der derzeitige Bestellablauf enthält keine ausschließlich automatisierte Entscheidung mit rechtlicher oder vergleichbar erheblicher Wirkung im Sinne von Art. 22 DSGVO. Bestellfristen und gesperrte Schultage werden technisch geprüft. Bei Änderungen an Funktionen oder Datenverarbeitungen wird diese Information angepasst.</p>
+      <p className="privacy-note">Fragen zu deinen Daten? <a href="mailto:eisendlestefan@gmail.com">Schreib uns eine E-Mail.</a></p>
+    </main>
+  </div>;
+}
+
 export default function PausenappMvpPrototype() {
+  const privacy = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seite') === 'datenschutz';
+  return privacy ? <PrivacyPage /> : <PausenappApplication />;
+}
+
+function PausenappApplication() {
   const [user, setUser] = useState<any>(null);
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
@@ -2762,7 +2827,7 @@ export default function PausenappMvpPrototype() {
                 {showBakeryRegistration && <div className="mt-5 rounded-2xl bg-white p-5 text-slate-950"><div className="mb-4"><p className="text-lg font-black">Als Bäckerei Partner werden</p><p className="mt-1 text-xs text-slate-500">Nach der Registrierung wird dein Betrieb von Pausenapp geprüft. Eine Schule kann direkt vorgeschlagen werden.</p></div><div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.name} onChange={(e) => setBakeryRegistration((p) => ({ ...p, name: e.target.value }))} placeholder="Bäckereiname *" /><Input value={bakeryRegistration.legalName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, legalName: e.target.value }))} placeholder="Firmenname" /><Input value={bakeryRegistration.city} onChange={(e) => setBakeryRegistration((p) => ({ ...p, city: e.target.value }))} placeholder="Ort *" /><Input value={bakeryRegistration.address} onChange={(e) => setBakeryRegistration((p) => ({ ...p, address: e.target.value }))} placeholder="Adresse" /><Input value={bakeryRegistration.phone} onChange={(e) => setBakeryRegistration((p) => ({ ...p, phone: e.target.value }))} placeholder="Telefon" /><Input value={bakeryRegistration.vatNumber} onChange={(e) => setBakeryRegistration((p) => ({ ...p, vatNumber: e.target.value }))} placeholder="MwSt.-Nr." /><Input type="email" value={bakeryRegistration.email} onChange={(e) => setBakeryRegistration((p) => ({ ...p, email: e.target.value }))} placeholder="E-Mail *" /><Input type="password" value={bakeryRegistration.password} onChange={(e) => setBakeryRegistration((p) => ({ ...p, password: e.target.value }))} placeholder="Passwort *" /></div><div className="my-5 border-t border-slate-200 pt-5"><p className="font-black">Erste Schule vorschlagen <span className="font-medium text-slate-400">(optional)</span></p><div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2"><Input value={bakeryRegistration.schoolName} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolName: e.target.value }))} placeholder="Name der Schule" /><Input value={bakeryRegistration.schoolCity} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolCity: e.target.value }))} placeholder="Ort der Schule" /><Input value={bakeryRegistration.schoolAddress} onChange={(e) => setBakeryRegistration((p) => ({ ...p, schoolAddress: e.target.value }))} placeholder="Adresse der Schule" className="sm:col-span-2" /></div></div><Button type="button" onClick={registerBakery} disabled={bakeryRegistrationLoading} className="w-full rounded-xl bg-emerald-600 font-black text-white hover:bg-emerald-700">{bakeryRegistrationLoading ? 'Registrierung läuft...' : 'Registrierung absenden'}</Button>{bakeryRegistrationNotice && <p className="mt-3 rounded-xl bg-slate-100 p-3 text-xs font-semibold text-slate-700">{bakeryRegistrationNotice}</p>}</div>}
 
                 {backendNotice && backendNotice !== 'Supabase verbunden' && backendNotice !== 'Demo-Modus' && <p role="status" className="landing-notice">{backendNotice}</p>}
-                <p className="landing-login-footer">Ein Zugang für Eltern, Bäckerei und Verwaltung.</p>
+                <p className="landing-login-footer">Ein Zugang für Eltern, Bäckerei und Verwaltung. <a href="/?seite=datenschutz" className="underline">Datenschutz</a></p>
               </section>
             </div>
             <section className="landing-how" aria-labelledby="landing-how-title">
@@ -2774,7 +2839,7 @@ export default function PausenappMvpPrototype() {
               </ol>
             </section>
           </main>
-          <footer className="landing-footer"><span>Pausenapp · Weniger organisieren. Mehr Pause.</span><span>Für Eltern, Schulen & Bäckereien.</span></footer>
+          <footer className="landing-footer"><span>Pausenapp · Weniger organisieren. Mehr Pause.</span><a href="/?seite=datenschutz">Datenschutz</a></footer>
         </div>
       </div>
     );
