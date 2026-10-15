@@ -1157,7 +1157,7 @@ export default function PausenappMvpPrototype() {
             if (profileResult.error) throw profileResult.error;
             profile = profileResult.data;
           }
-          if (!profile && authData.user.user_metadata?.account_type === 'parent_registration') {
+          if (!profile && (authData.user.user_metadata?.account_type === 'parent_registration' || (authData.user.user_metadata?.account_type !== 'bakery_application' && authData.user.identities?.some((identity: any) => identity.provider === 'google')))) {
             await finalizeParentRegistration(authData.user);
             const profileResult = await supabase.from('profiles').select('id, email, full_name, role, bakery_id').eq('id', authData.user.id).maybeSingle();
             if (profileResult.error) throw profileResult.error;
@@ -1703,6 +1703,23 @@ export default function PausenappMvpPrototype() {
       setBackendNotice(`Schulvorschlag konnte nicht abgelehnt werden: ${getNetworkErrorMessage(error)}`);
     } finally {
       setAdminApprovalLoadingId('');
+    }
+  }
+
+  async function loginWithGoogle() {
+    if (!supabase) return setBackendNotice('Supabase ist nicht konfiguriert.');
+    setAuthLoading(true);
+    setBackendNotice('Weiterleitung zu Google …');
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: 'https://pausen.app', queryParams: { prompt: 'select_account' } }
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error('Google-Anmeldung konnte nicht gestartet werden.');
+    } catch (error) {
+      setBackendNotice(`Google-Anmeldung nicht möglich: ${getNetworkErrorMessage(error)}`);
+      setAuthLoading(false);
     }
   }
 
@@ -2723,6 +2740,9 @@ export default function PausenappMvpPrototype() {
                 <p className="landing-eyebrow">DEIN PAUSENAPP-KONTO</p>
                 <h2 id="landing-login-title">Schön, dass du da bist.</h2>
                 <p className="landing-login-description">Melde dich an und plane die nächste Pause.</p>
+                <button type="button" onClick={loginWithGoogle} disabled={authLoading} className="mt-5 flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50">Mit Google anmelden</button>
+                <p className="mt-2 text-center text-xs text-slate-500">Neu hier? Dabei wird dein Elternkonto erstellt.</p>
+                <p className="my-4 text-center text-xs text-slate-400">oder mit E-Mail</p>
                 <form className="landing-form" onSubmit={(event) => { event.preventDefault(); if (!authLoading && loginPassword) void loginWithPassword(); }}>
                   <div><label htmlFor="landing-email">E-Mail-Adresse</label><Input id="landing-email" type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} placeholder="name@beispiel.it" required className="landing-input" /></div>
                   <div><label htmlFor="landing-password">Passwort</label><Input id="landing-password" type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} placeholder="Dein Passwort" required className="landing-input" /></div>
